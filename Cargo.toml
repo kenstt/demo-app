@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+    "app/src-tauri",
+    "core",
+    "service",
+    "web",
+]
