@@ -1,4 +1,5 @@
 pub fn add(left: usize, right: usize) -> usize {
+    println!("add fn called in service");
     left + right
 }
 
