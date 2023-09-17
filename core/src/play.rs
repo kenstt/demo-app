@@ -1,4 +1,8 @@
+use core::tic_tac_toe::{Game, Cell};
+
 fn main() {
-    let sum = core::add(1, 2);
-    println!("sum: {}", sum);
+    let game = Game {
+        cells: [Cell::Empty; 9]
+    };
+    println!("{:?}", game);
 }
