@@ -16,13 +16,14 @@ pub enum Cell {
 pub struct Game {
     pub cells: [Cell; 9],
     pub is_over: bool,
+    pub winner: Option<Cell>,
 }
 
 impl Game {
     // 替Game加上方法
     pub fn play(&mut self, num: usize) {   // 這裡的方法參數為自己與外部輸入值
-        self.cells[num] = Cell::O;
-        self.is_over = true;
+        let index = num - 1;
+        self.cells[index] = Cell::O;
     }
 }
 
@@ -32,6 +33,7 @@ impl Default for Game {
         Self {                 // 所以這邊的兩個Self換成Game也是一樣的結果
             cells: [Cell::Empty; 9],
             is_over: false,
+            winner: None,
         }
     }
 }
