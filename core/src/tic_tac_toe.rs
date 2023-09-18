@@ -1,5 +1,13 @@
 use std::fmt::{Display, Formatter};
 
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("已非空格，不能再次畫記！")]
+    AlreadyOccupied,
+    #[error("遊戲已結束，無法操作！")]
+    GameOver,
+}
+
 #[derive(Copy, Clone, Debug)]
 pub enum Symbol {
     O,
@@ -11,13 +19,22 @@ pub struct Game {
     pub cells: [Option<Symbol>; 9],
     pub is_over: bool,
     pub winner: Option<Symbol>,
+    pub symbols: [Symbol; 2],   // 交替下棋用
 }
 
 impl Game {
-    // 替Game加上方法
-    pub fn play(&mut self, num: usize) {   // 這裡的方法參數為自己與外部輸入值
+    pub fn current_step(&self) -> usize {
+        self.cells.iter().filter(|x| x.is_some()).count() // 算步數
+    }
+
+    pub fn play(&mut self, num: usize) -> Result<(), Error>{
         let index = num - 1;
-        self.cells[index] = Some(Symbol::O);
+        if self.cells[index].is_some() {
+            return Err(Error::AlreadyOccupied);
+        }
+        let symbol = self.symbols[self.current_step() % 2];
+        self.cells[index] = Some(symbol);
+        Ok(())
     }
 }
 
@@ -28,6 +45,7 @@ impl Default for Game {
             cells: [None; 9],
             is_over: false,
             winner: None,
+            symbols: [Symbol::O, Symbol::X], // 未來開心的話可以改順序，或加上奇怪的符號(?)△☆★ （？
         }
     }
 }

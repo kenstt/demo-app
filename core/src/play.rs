@@ -18,7 +18,11 @@ fn main() {
                     continue;                           // 提示並跳下一輪請User重新輸入
                 }
                 println!("你輸入的是: {}", num);          // Debug 用 (?)
-                game.play(num);                          // 運行遊戲邏輯
+                let round = game.play(num);             // play現有有回傳值Result<T,E>
+                if round.is_err() {                     // 加上遇到錯誤便打印出來
+                    println!("錯誤：{}", round.err().unwrap());
+                    continue;
+                }
             }
             Err(_) => {                                  // 解析錯誤
                 println!("輸入內容錯誤：請輸入數字 1 ~ 9：");
