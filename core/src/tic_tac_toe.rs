@@ -43,15 +43,19 @@ impl Game {
 
     pub fn check_over(&mut self) {
         let winner = self.check_winner();        // 檢查贏家，邏輯比較複雜，另外寫個fn
-        if winner.is_some() {                    // 有玩家勝出
-            self.is_over = true;                 // 設定遊戲狀態為結束
-            self.winner = winner;                // 記錄勝利玩家
-            return;
-        }
-        if self.cells.iter().all(|x| x.is_some()) { // 無贏家且所有格式都填滿
-            self.is_over = true;                    // 表示和局，遊戲狀態設為結束
+        match winner {                                // 匹配玩家所有可能
+            Some(_) => {                              // 情境一：非None
+                self.is_over = true;                  //   註記遊戲結束
+                self.winner = winner;                 //   紀錄贏家
+            }
+            None => {                                 // 情境二：無贏家
+                if self.cells.iter().all(|x| x.is_some()) { // 若格式已填滿
+                    self.is_over = true;              // 遊戲結束 (平手)
+                }
+            }
         }
     }
+
     pub fn check_winner(&mut self) -> Option<Symbol> {
         let win_patterns = [                 // 連線的index情境
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫
@@ -64,11 +68,10 @@ impl Game {
                 self.cells[idx[1]],
                 self.cells[idx[2]],
             ];
-            if line == [Some(Symbol::O); 3] { // 整條線等於 [O,O,O] 表示O贏
-                return Some(Symbol::O);
-            }
-            if line == [Some(Symbol::X); 3] { // 整條線等於 [X,X,X] 表示X贏
-                return Some(Symbol::X);
+            match line {
+                [Some(Symbol::O), Some(Symbol::O), Some(Symbol::O)] => return Some(Symbol::O),
+                [Some(Symbol::X), Some(Symbol::X), Some(Symbol::X)] => return Some(Symbol::X),
+                _ => (),
             }
         }
         None                                  // 檢查完無符合條件回傳無
