@@ -1,3 +1,4 @@
+use rand::prelude::SliceRandom;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, thiserror::Error)]
@@ -23,6 +24,27 @@ pub struct Game {
 }
 
 impl Game {
+    pub fn play_with_counter(&mut self, num: usize) -> Result<(), Error> {
+        self.play(num)?;         // unwrap or return Error
+        if self.is_over {        // 結束就離開
+            return Ok(());
+        }
+
+        let mut indices: [usize; 9] = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 格子的範圍
+        // let mut indices: [usize; 9] = (1..=9)            // 同上一行，進階寫法
+        //     .collect::<Vec<_>>().try_into().unwrap();
+        indices.shuffle(&mut rand::thread_rng());        // 打亂順序
+        for index in indices.iter().enumerate() {        // 逐一檢查可否下
+            let num = index.1;                           // 取出格號
+            if self.cells[num - 1].is_some() {           // 檢查該格是否已劃記
+                continue;                                // 若已劃記便跳至下一格 (next for)
+            }
+            self.play(*num)?;                            // 格號為空直接劃記該格
+            break;                                       // 中斷整個for (不然會全填滿)
+        }
+        Ok(())
+    }
+
     pub fn current_step(&self) -> usize {
         self.cells.iter().filter(|x| x.is_some()).count() // 算步數
     }

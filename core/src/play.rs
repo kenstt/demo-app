@@ -18,7 +18,7 @@ fn main() {
                     continue;                           // 提示並跳下一輪請User重新輸入
                 }
                 println!("你輸入的是: {}", num);          // Debug 用 (?)
-                let round = game.play(num);             // play現有有回傳值Result<T,E>
+                let round = game.play_with_counter(num);
                 if round.is_err() {                     // 加上遇到錯誤便打印出來
                     println!("錯誤：{}", round.err().unwrap());
                     continue;

@@ -10,5 +10,6 @@ name = "play"
 path = "src/play.rs"
 
 [dependencies]
+rand = { worksapce = true }
 thiserror = { worksapce = true }
 
