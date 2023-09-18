@@ -8,7 +8,7 @@ pub enum Error {
     GameOver,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Symbol {
     O,
     X,
@@ -27,14 +27,51 @@ impl Game {
         self.cells.iter().filter(|x| x.is_some()).count() // 算步數
     }
 
-    pub fn play(&mut self, num: usize) -> Result<(), Error>{
+    pub fn play(&mut self, num: usize) -> Result<(), Error> {
+        if self.is_over {                    // 一開始先判斷遊戲結束就報錯
+            return Err(Error::GameOver);
+        }
         let index = num - 1;
         if self.cells[index].is_some() {
             return Err(Error::AlreadyOccupied);
         }
         let symbol = self.symbols[self.current_step() % 2];
         self.cells[index] = Some(symbol);
+        self.check_over();                   // 玩家每一步結束後判斷是否結束
         Ok(())
+    }
+
+    pub fn check_over(&mut self) {
+        let winner = self.check_winner();        // 檢查贏家，邏輯比較複雜，另外寫個fn
+        if winner.is_some() {                    // 有玩家勝出
+            self.is_over = true;                 // 設定遊戲狀態為結束
+            self.winner = winner;                // 記錄勝利玩家
+            return;
+        }
+        if self.cells.iter().all(|x| x.is_some()) { // 無贏家且所有格式都填滿
+            self.is_over = true;                    // 表示和局，遊戲狀態設為結束
+        }
+    }
+    pub fn check_winner(&mut self) -> Option<Symbol> {
+        let win_patterns = [                 // 連線的index情境
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // 直
+            [0, 4, 8], [2, 4, 6],            // 斜
+        ];
+        for idx in win_patterns.iter() {     // 用for 逐項檢查上面8條線
+            let line = [                     // 把資料代入
+                self.cells[idx[0]],
+                self.cells[idx[1]],
+                self.cells[idx[2]],
+            ];
+            if line == [Some(Symbol::O); 3] { // 整條線等於 [O,O,O] 表示O贏
+                return Some(Symbol::O);
+            }
+            if line == [Some(Symbol::X); 3] { // 整條線等於 [X,X,X] 表示X贏
+                return Some(Symbol::X);
+            }
+        }
+        None                                  // 檢查完無符合條件回傳無
     }
 }
 
