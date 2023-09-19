@@ -1,29 +1,43 @@
 use rand::prelude::SliceRandom;
 use std::fmt::{Display, Formatter};
 
+/// 井字遊戲的錯誤類型。
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    /// 格子已被劃記。
     #[error("已非空格，不能再次畫記！")]
     AlreadyOccupied,
+    /// 遊戲已結束。
     #[error("遊戲已結束，無法操作！")]
     GameOver,
 }
 
+/// 井字遊戲的符號。
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Symbol {
     O,
     X,
 }
 
+/// 井字遊戲棋局
 #[derive(Debug)]
 pub struct Game {
+    /// 棋盤格子，每個格子可能是空的，或是被劃記的符號。
     pub cells: [Option<Symbol>; 9],
+    /// 遊戲是否結束。
     pub is_over: bool,
+    /// 贏家，若無則為None，若有則為Some(Symbol)。
     pub winner: Option<Symbol>,
-    pub symbols: [Symbol; 2],   // 交替下棋用
+    /// 劃記符號，交替下棋使用，預設為O先下。
+    pub symbols: [Symbol; 2],
 }
 
 impl Game {
+    /// 與電腦對戰，`num`為玩家下的格號，1~9分別代表[九宮格](https://zh.wikipedia.org/zh-tw/%E4%B9%9D%E5%AE%AE%E6%A0%BC)的位置，
+    /// 玩家下完後，電腦會隨機選擇一個空格劃記，直到遊戲結束，
+    /// 若玩家下的格號已被劃記，會回傳錯誤[`Error::AlreadyOccupied`]，
+    /// 若遊戲已結束，會回傳錯誤[`Error::GameOver`]，
+    /// 若一切正常，回傳`Ok(())`。
     pub fn play_with_counter(&mut self, num: usize) -> Result<(), Error> {
         self.play(num)?;         // unwrap or return Error
         if self.is_over {        // 結束就離開
@@ -45,10 +59,16 @@ impl Game {
         Ok(())
     }
 
+    /// 取得目前步數，用於判斷現在是輪到哪一方符號。
     pub fn current_step(&self) -> usize {
         self.cells.iter().filter(|x| x.is_some()).count() // 算步數
     }
 
+    /// 下棋，`num`為指定劃記的格號，1~9分別代表九宮格的位置，
+    /// 若指定的格號已被劃記，會回傳錯誤[`Error::AlreadyOccupied`]，
+    /// 若遊戲已結束，會回傳錯誤[`Error::GameOver`]，
+    /// 若無報錯，會將格號劃記為當前劃記符號，並檢查遊戲是否結束，
+    /// 若一切正常，回傳`Ok(())`。
     pub fn play(&mut self, num: usize) -> Result<(), Error> {
         if self.is_over {                    // 一開始先判斷遊戲結束就報錯
             return Err(Error::GameOver);
@@ -63,6 +83,7 @@ impl Game {
         Ok(())
     }
 
+    /// 檢查遊戲是否結束，若結束則設定`is_over`為`true`，並設定`winner`為贏家。
     pub fn check_over(&mut self) {
         let winner = self.check_winner();        // 檢查贏家，邏輯比較複雜，另外寫個fn
         match winner {                                // 匹配玩家所有可能
@@ -78,6 +99,9 @@ impl Game {
         }
     }
 
+    /// 檢查贏家，
+    /// 這個函式會檢查所有可能的連線情境，若有連線則回傳贏家`Some(Symbol)`，
+    /// 若無則回傳[`None`]。
     pub fn check_winner(&mut self) -> Option<Symbol> {
         let win_patterns = [                 // 連線的index情境
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫
@@ -131,6 +155,7 @@ impl Display for Game {
     }
 }
 
+/// 顯示格子內容( for Display trait )，若格子為空，顯示空白，否則顯示格子內容。
 fn show(cell: Option<Symbol>) -> String {
     match cell {
         Some(symbol) => format!("{}", symbol),
