@@ -13,7 +13,7 @@ fn main() {
 
         match input.trim().parse::<usize>() {           // 嘗試轉換輸入內容為數字
             Ok(num) => {                                // 轉換成功
-                if num < 1 || num > 9 {                 // 檢核輸入範圍不符
+                if !(1..=9).contains(&num) {                 // 檢核輸入範圍不符
                     println!("數字範圍錯誤，請輸入數字 1 ~ 9");
                     continue;                           // 提示並跳下一輪請User重新輸入
                 }
