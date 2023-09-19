@@ -37,3 +37,14 @@ fn test_game2_for_draw() {           // 模擬平手情境
     assert_eq!(game.is_over, true);  // 棋局已結束
     assert_eq!(game.winner, None);   // 但無玩家勝出
 }
+
+// 把game.cells的pub拿掉，測試會失敗
+#[test]
+fn test_access_game_cell() {
+    let mut game = Game::default();
+    game.cells = [
+        None, None, None,
+        None, None, None,
+        None, None, None,
+    ];
+}
