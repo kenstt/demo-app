@@ -60,6 +60,16 @@ impl Game {
     }
 
     /// 取得目前步數，用於判斷現在是輪到哪一方符號。
+    /// 以下範例，預設第一手`O`，所以第一步後，步數為1，後續依下棋次數遞增：
+    /// ```
+    /// use core::tic_tac_toe::{Game, Symbol};
+    /// let mut game = Game::default();
+    /// assert_eq!(game.current_step(), 0);
+    /// game.play(1).unwrap();
+    /// assert_eq!(game.current_step(), 1);
+    /// game.play(2).unwrap();
+    /// assert_eq!(game.current_step(), 2);
+    /// ```
     pub fn current_step(&self) -> usize {
         self.cells.iter().filter(|x| x.is_some()).count() // 算步數
     }
@@ -69,6 +79,22 @@ impl Game {
     /// 若遊戲已結束，會回傳錯誤[`Error::GameOver`]，
     /// 若無報錯，會將格號劃記為當前劃記符號，並檢查遊戲是否結束，
     /// 若一切正常，回傳`Ok(())`。
+    /// 範例，以下在第1格下棋後，預設第一手`O`，所以第1格（陣列索引第0項）會畫上`O`：
+    /// ```
+    /// use core::tic_tac_toe::{Game, Symbol};
+    /// let mut game = Game::default();
+    /// game.play(1).unwrap();
+    /// assert_eq!(game.cells[0], Some(Symbol::O));
+    /// ```
+    /// 如果我們再下第二手，預設第二手`X`，所以下例第8格（陣列索引第7項）會畫上`X`：
+    /// ```
+    /// use core::tic_tac_toe::{Game, Symbol};
+    /// let mut game = Game::default();
+    /// game.play(1).unwrap();
+    /// assert_eq!(game.cells[0], Some(Symbol::O));
+    /// game.play(8).unwrap();
+    /// assert_eq!(game.cells[7], Some(Symbol::X));
+    /// ```
     pub fn play(&mut self, num: usize) -> Result<(), Error> {
         if self.is_over {                    // 一開始先判斷遊戲結束就報錯
             return Err(Error::GameOver);
@@ -84,6 +110,44 @@ impl Game {
     }
 
     /// 檢查遊戲是否結束，若結束則設定`is_over`為`true`，並設定`winner`為贏家。
+    /// ```
+    /// use core::tic_tac_toe::{Game, Symbol};
+    /// let mut game = Game::default();
+    /// game.cells = [
+    ///     Some(Symbol::O), Some(Symbol::O), Some(Symbol::O),
+    ///     Some(Symbol::X), Some(Symbol::X), None,
+    ///     None,            None,            None,
+    /// ];
+    /// game.check_over();
+    /// assert_eq!(game.is_over, true);
+    /// assert_eq!(game.winner, Some(Symbol::O));
+    /// ```
+    /// 和局範例：
+    /// ```
+    /// use core::tic_tac_toe::{Game, Symbol};
+    /// let mut game = Game::default();
+    /// game.cells = [
+    ///     Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+    ///     Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+    ///     Some(Symbol::O), Some(Symbol::X), Some(Symbol::O),
+    /// ];
+    /// game.check_over();
+    /// assert_eq!(game.is_over, true);
+    /// assert_eq!(game.winner, None);
+    /// ```
+    /// 未結束範例：
+    /// ```
+    /// use core::tic_tac_toe::{Game, Symbol};
+    /// let mut game = Game::default();
+    /// game.cells = [
+    ///     Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+    ///     Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+    ///     Some(Symbol::O), None,            None,
+    /// ];
+    /// game.check_over();
+    /// assert_eq!(game.is_over, false);
+    /// assert_eq!(game.winner, None);
+    /// ```
     pub fn check_over(&mut self) {
         let winner = self.check_winner();        // 檢查贏家，邏輯比較複雜，另外寫個fn
         match winner {                                // 匹配玩家所有可能
@@ -102,6 +166,16 @@ impl Game {
     /// 檢查贏家，
     /// 這個函式會檢查所有可能的連線情境，若有連線則回傳贏家`Some(Symbol)`，
     /// 若無則回傳[`None`]。
+    /// ```
+    /// use core::tic_tac_toe::{Game, Symbol};
+    /// let mut game = Game::default();
+    /// game.cells = [
+    ///     Some(Symbol::O), Some(Symbol::O), Some(Symbol::O),
+    ///     Some(Symbol::X), Some(Symbol::X), None,
+    ///     None,            None,            None,
+    /// ];
+    /// assert_eq!(game.check_winner(), Some(Symbol::O));
+    /// ```
     pub fn check_winner(&mut self) -> Option<Symbol> {
         let win_patterns = [                 // 連線的index情境
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫
