@@ -147,3 +147,148 @@ impl Display for Symbol {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_check_winner() {
+        let mut game = Game::default();
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::O),
+            Some(Symbol::X), Some(Symbol::X), None,
+            None, None, None,
+        ];
+        assert_eq!(game.check_winner(), Some(Symbol::O));
+
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), None,
+            None, None, None,
+        ];
+        assert_eq!(game.check_winner(), None);
+
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+        ];
+        assert_eq!(game.check_winner(), None);
+
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::O),
+        ];
+        assert_eq!(game.check_winner(), Some(Symbol::O));
+
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+            Some(Symbol::O), Some(Symbol::X), Some(Symbol::O),
+        ];
+        assert_eq!(game.check_winner(), None);
+
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+        ];
+        assert_eq!(game.check_winner(), Some(Symbol::X));
+    }
+
+    #[test]
+    fn test_check_over_having_winner() {
+        let mut game = Game::default();
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::O),
+            Some(Symbol::X), Some(Symbol::X), None,
+            None, None, None,
+        ];
+        game.check_over();
+        assert_eq!(game.is_over, true);
+        assert_eq!(game.winner, Some(Symbol::O));
+    }
+
+    #[test]
+    fn test_check_over_having_no_winner() {
+        let mut game = Game::default();
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+            Some(Symbol::O), Some(Symbol::X), Some(Symbol::O),
+        ];
+        game.check_over();
+        assert_eq!(game.is_over, true);
+        assert_eq!(game.winner, None);
+    }
+
+    #[test]
+    fn test_check_over_for_not_over() {
+        let mut game = Game::default();
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+            Some(Symbol::O), None, None,
+        ];
+        game.check_over();
+        assert_eq!(game.is_over, false);
+        assert_eq!(game.winner, None);
+    }
+
+    #[test]
+    fn test_current_step() {
+        let mut game = Game::default();
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+            Some(Symbol::O), None, None,
+        ];
+        assert_eq!(game.current_step(), 7);
+
+        game.cells = [
+            Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
+            Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
+            Some(Symbol::O), Some(Symbol::X), None,
+        ];
+
+        assert_eq!(game.current_step(), 8);
+    }
+
+    #[test]
+    fn test_play() {
+        let mut game = Game::default();
+        game.play(1).unwrap();
+        assert_eq!(game.cells[0], Some(Symbol::O));
+        assert_eq!(game.current_step(), 1);
+
+        game.play(2).unwrap();
+        assert_eq!(game.cells[1], Some(Symbol::X));
+        assert_eq!(game.current_step(), 2);
+
+        game.play(3).unwrap();
+        assert_eq!(game.cells[2], Some(Symbol::O));
+        assert_eq!(game.current_step(), 3);
+
+        game.play(4).unwrap();
+        assert_eq!(game.cells[3], Some(Symbol::X));
+        assert_eq!(game.current_step(), 4);
+
+        game.play(5).unwrap();
+        assert_eq!(game.cells[4], Some(Symbol::O));
+        assert_eq!(game.current_step(), 5);
+
+        game.play(6).unwrap();
+        assert_eq!(game.cells[5], Some(Symbol::X));
+        assert_eq!(game.current_step(), 6);
+    }
+
+    #[test]
+    fn test_play_with_counter() {
+        let mut game = Game::default();
+        game.play_with_counter(1).unwrap();
+        assert_eq!(game.cells[0], Some(Symbol::O));
+        assert_eq!(game.current_step(), 2);
+    }
+}
