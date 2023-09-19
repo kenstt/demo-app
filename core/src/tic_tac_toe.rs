@@ -32,6 +32,18 @@ pub struct Game {
     pub symbols: [Symbol; 2],
 }
 
+// 如果你想要實作getter的話，這裡是範例參考：
+impl Game {
+    /// 取得九宮格的格子，每個格子可能是空格，或是`O`或`X`
+    pub fn cells(&self) -> [Option<Symbol>; 9] { self.cells }
+    /// 取得遊戲是否結束
+    pub fn is_over(&self) -> bool { self.is_over }
+    /// 取得贏家，如果沒有則為`None`，如果有則為`O`或`X`
+    pub fn winner(&self) -> Option<Symbol> { self.winner }
+    /// 取得使用符號清單，預設為`[O, X]`，下棋時會依序輪流使用
+    pub fn symbols(&self) -> [Symbol; 2] { self.symbols }
+}
+
 impl Game {
     /// 與電腦對戰，`num`為玩家下的格號，1~9分別代表[九宮格](https://zh.wikipedia.org/zh-tw/%E4%B9%9D%E5%AE%AE%E6%A0%BC)的位置，
     /// 玩家下完後，電腦會隨機選擇一個空格劃記，直到遊戲結束，
