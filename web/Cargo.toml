@@ -9,3 +9,5 @@ edition = "2021"
 core = { path = "../core" }
 service = { path = "../service" }
 
+tokio = { workspace = true }
+warp = { workspace = true }

@@ -1,5 +1,9 @@
-fn main() {
-    println!("Hello, world!");
-    println!("call core fn from server: {}",core::add(2, 2));
-    println!("call service fn from server: {}",service::add(2, 2));
+use warp::Filter;
+
+#[tokio::main]
+async fn main() {
+    // Match any request and return hello world!
+    let routes = warp::any().map(|| "Hello, World!");
+
+    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
