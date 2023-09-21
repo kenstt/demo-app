@@ -48,7 +48,12 @@ impl TicTacToeService for InMemoryTicTacToeService {
         let mut games = self.games
             .lock()                // LockResult<MutexGuard<HashMap<…>>>
             .unwrap();             // MutexGuard<HashMap<…>>
-        let id = games.len() + 1;  // 遞增序號
+        // let id = games.len() + 1; 原寫法有問題
+        let id = if games.iter().count() == 0 {
+            1                                                   // 不加; 視為 if 的回傳值
+        } else {
+            games.iter().max_by_key(|(k, _)| *k).unwrap().0 + 1 // 不加; 視為 if 的回傳值
+        };
         let game = Game::default();
         games.insert(id, game.clone());    // HashMap新增 key/value方式
         Ok((id, game))
@@ -81,7 +86,11 @@ impl TicTacToeService for InMemoryTicTacToeService {
     }
 
     fn delete(&self, id: usize) -> Result<(), Error> {
-        todo!()
+        let mut games = self.games.lock().unwrap();
+        match games.remove(&id) {         // remove 會回傳Some(Game)
+            Some(_) => Ok(()),            // Reulst的Ok型別是()
+            None => Err(Error::NotFound),
+        }                                 // 注意這裡沒;結尾，所以表示match表達式結果直接回傳
     }
 }
 
@@ -141,6 +150,25 @@ mod tests {
         };
         let steps = game.cells.iter().filter(|x| x.is_some()).count();
         assert_eq!(steps, 4);   // 驗證執行完含電腦總步數是4
+    }
+
+    #[test]
+    fn test_delete() {
+        let service = InMemoryTicTacToeService::new();
+        let _ = service.new();                         // 先製造1個才有東西刪除
+        let result = service.delete(1);                // 執行刪除
+        assert_eq!(result.is_ok(), true);              // 驗證執行成功
+        let game = service.get(1);                     // 覆驗已無編號1資料
+        assert_eq!(game.is_err(), true);
+        assert_eq!(game.err(), Some(Error::NotFound));
+    }
+
+    #[test]
+    fn test_delete_none() {
+        let service = InMemoryTicTacToeService::new();
+        let result = service.delete(10);                // 刪除不存在資料
+        assert_eq!(result.is_err(), true);              // 如預期報錯
+        assert_eq!(result.err(), Some(Error::NotFound));
     }
 }
 
