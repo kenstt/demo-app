@@ -20,7 +20,7 @@ pub enum Symbol {
 }
 
 /// 井字遊戲棋局
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Game {
     /// 棋盤格子，每個格子可能是空的，或是被劃記的符號。
     pub cells: [Option<Symbol>; 9],

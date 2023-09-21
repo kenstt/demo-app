@@ -18,22 +18,30 @@ pub trait TicTacToeService {
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
-struct InMemoryTicTacToeService {            // 定義InMemory服務
-games: Arc<Mutex<HashMap<usize, Game>>>, // 這什麼型別!?，請看下方補充教材
+struct InMemoryTicTacToeService {
+    // 定義InMemory服務
+    games: Arc<Mutex<HashMap<usize, Game>>>, // 這什麼型別!?，請看下方補充教材
 }
 
-impl InMemoryTicTacToeService {              // 實作建構式，這次我們改用new
-fn new() -> Self {
-    Self {
-        games: Arc::new(Mutex::new(HashMap::new())),
+impl InMemoryTicTacToeService {
+    // 實作建構式，這次我們改用new
+    fn new() -> Self {
+        Self {
+            games: Arc::new(Mutex::new(HashMap::new())),
+        }
     }
 }
-}
 
-impl TicTacToeService for InMemoryTicTacToeService { // 替InMemory實作Trait
-fn new(&self) -> Result<(usize, Game), Error> {
-    todo!()
-}
+impl TicTacToeService for InMemoryTicTacToeService {
+    fn new(&self) -> Result<(usize, Game), Error> {
+        let mut games = self.games
+            .lock()                // LockResult<MutexGuard<HashMap<…>>>
+            .unwrap();             // MutexGuard<HashMap<…>>
+        let id = games.len() + 1;  // 遞增序號
+        let game = Game::default();
+        games.insert(id, game.clone());    // HashMap新增 key/value方式
+        Ok((id, game))
+    }
 
     fn get(&self, id: usize) -> Result<Game, Error> {
         todo!()
