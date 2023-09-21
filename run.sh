@@ -4,6 +4,7 @@ echo Run Options:
 echo 1: [core] demo play
 echo 2: [core] unit test
 echo 3: [web] run web api server
+echo 4: [service] unit test
 read VAR
 
 if [[ $VAR -eq 1 ]]
@@ -15,4 +16,7 @@ elif [[ $VAR -eq 2 ]]
 elif [[ $VAR -eq 3 ]]
   then
   cargo watch -q -c -w ./web -w ./service -w ./core -x 'run -p web'
+elif [[ $VAR -eq 4 ]]
+  then
+  cargo watch -q -c -w ./service -w ./core -x 'test -p service'
 fi
