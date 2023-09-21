@@ -1,5 +1,6 @@
 use core::tic_tac_toe::Game;
 
+#[derive(Debug)]
 pub enum Error {
     GameRules(String),
     GameOver,
@@ -53,5 +54,21 @@ impl TicTacToeService for InMemoryTicTacToeService {
 
     fn delete(&self, id: usize) -> Result<(), Error> {
         todo!()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let service = InMemoryTicTacToeService::new();
+        let (id, game) = service.new().unwrap();  // unwrap取得Result內容
+        assert_eq!(id, 1);
+        assert_eq!(game.is_over, false);
+        let is_empty = game.cells.iter().all(|&x| x == None); // 驗證每一格都是空的
+        // let is_empty = game.cells.iter().all(|x| *x == None); // 或是這樣寫
+        assert_eq!(is_empty, true);
     }
 }
