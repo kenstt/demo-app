@@ -8,6 +8,16 @@ pub enum Error {
     Unknown,
 }
 
+impl From<core::tic_tac_toe::Error> for Error {
+    // 實作訊息裡提到的 trait
+    fn from(e: core::tic_tac_toe::Error) -> Self {
+        match e {                                      // 把 mapping邏輯寫這
+            core::tic_tac_toe::Error::GameOver => Error::GameOver,
+            _ => Error::GameRules(e.to_string()),
+        }
+    }
+}
+
 pub trait TicTacToeService {
     fn new(&self) -> Result<(usize, Game), Error>;
     fn get(&self, id: usize) -> Result<Game, Error>;
@@ -57,7 +67,17 @@ impl TicTacToeService for InMemoryTicTacToeService {
     }
 
     fn play(&self, id: usize, num: usize) -> Result<Game, Error> {
-        todo!()
+        let mut games = self.games.lock().unwrap();
+        let game = games.get_mut(&id).ok_or(Error::NotFound)?;
+        game.play_with_counter(num)?;
+        // 另一種寫法
+        // game.play_with_counter(num).map_err(|e| match e {
+        //     core::tic_tac_toe::Error::GameOver => Error::GameOver,
+        //     core::tic_tac_toe::Error::AlreadyOccupied
+        //     => Error::GameRules("AlreadyOccupied".to_string()),
+        // })?;
+
+        Ok(game.clone())
     }
 
     fn delete(&self, id: usize) -> Result<(), Error> {
@@ -96,6 +116,31 @@ mod tests {
         let game = service.get(10);                    // Result<Game, Error>
         assert_eq!(game.is_err(), true);               // 驗證回傳Error
         assert_eq!(game.err(), Some(Error::NotFound)); // 驗證Error類別
+    }
+
+    #[test]
+    fn test_play() {
+        let service = InMemoryTicTacToeService::new();
+        let _ = service.new();                      // 建立一筆id=1的遊戲局
+        let game = service.play(1, 1).unwrap();     //呼叫 play
+        assert_eq!(game.cells[0], Some(core::tic_tac_toe::Symbol::O));
+
+        let game = service.get(1).unwrap();         // 透過 get 確認修改是否回存
+        assert_eq!(game.cells[0], Some(core::tic_tac_toe::Symbol::O));
+    }
+
+    #[test]
+    fn test_play_two_round() {
+        let service = InMemoryTicTacToeService::new();
+        let _ = service.new();
+        let game = service.play(1, 1).unwrap();
+        let game = if game.cells[3] == Some(core::tic_tac_toe::Symbol::X) {
+            service.play(1, 2).unwrap()
+        } else {
+            service.play(1, 3).unwrap()
+        };
+        let steps = game.cells.iter().filter(|x| x.is_some()).count();
+        assert_eq!(steps, 4);   // 驗證執行完含電腦總步數是4
     }
 }
 
