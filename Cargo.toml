@@ -11,5 +11,8 @@ members = [
 [workspace.dependencies]
 rand = { version = "0.8" }
 thiserror = { version = "1.0" }
+tracing = { version = "0.1" }
+tracing-appender = { version = "0.2" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tokio = { version = "1.29", features = ["full"] }
-warp = { version = "0.3"}
+warp = { version = "0.3" }
