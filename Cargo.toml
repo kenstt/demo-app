@@ -9,6 +9,7 @@ members = [
 ]
 
 [workspace.dependencies]
+dotenvy = { version = "0.15" }
 rand = { version = "0.8" }
 thiserror = { version = "1.0" }
 tracing = { version = "0.1" }

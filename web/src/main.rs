@@ -1,9 +1,11 @@
 use warp::Filter;
 
 mod logger;             // 抽出去的檔案
+mod config;
 
 #[tokio::main]
 async fn main() {
+    config::init();
     let file_appender = tracing_appender::rolling::daily("./logs", "log");
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
     logger::register_tracing(non_blocking);
