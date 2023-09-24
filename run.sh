@@ -6,6 +6,7 @@ echo 2: [core] unit test
 echo 3: [web] run web api server
 echo 4: [service] unit test
 echo 5: [web] unit test
+echo 6: [tauri] dev
 read VAR
 
 if [[ $VAR -eq 1 ]]
@@ -23,4 +24,7 @@ elif [[ $VAR -eq 4 ]]
 elif [[ $VAR -eq 5 ]]
   then
   cargo watch -q -c -w ./web -w ./service -w ./core -x 'test -p web'
+elif [[ $VAR -eq 6 ]]
+  then
+  cargo tauri dev -- -p app
 fi
