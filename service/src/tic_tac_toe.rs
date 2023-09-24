@@ -44,6 +44,14 @@ impl InMemoryTicTacToeService {
     }
 }
 
+impl Default for InMemoryTicTacToeService {
+    fn default() -> Self {
+        Self {
+            games: Arc::new(Mutex::new(HashMap::new())),
+        }
+    }
+}
+
 impl TicTacToeService for InMemoryTicTacToeService {
     fn new_game(&self) -> Result<(usize, Game), Error> {
         let mut games = self.games

@@ -68,7 +68,7 @@ pub async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> 
 
     let json = warp::reply::json(&AppErrorMessage {
         message: message.into(),
-        details: details.into(),
+        details,
     });
 
     Ok(warp::reply::with_status(json, code))

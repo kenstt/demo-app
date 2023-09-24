@@ -1,6 +1,7 @@
 use warp::{Filter, Rejection};
 use service::tic_tac_toe::TicTacToeService;
 use crate::error::AppError;
+use warp::http::StatusCode;
 
 pub fn router_games(
     service: impl TicTacToeService
@@ -75,8 +76,8 @@ pub fn games_delete(
         .and_then(move |id| {
             let service = service.clone();
             async move {
-                let games = service.delete(id).map_err(AppError::from)?;
-                Ok::<_, Rejection>(warp::reply::json(&games))
+                service.delete(id).map_err(AppError::from)?;
+                Ok::<_, Rejection>(StatusCode::NO_CONTENT)
             }
         })
 }

@@ -5,6 +5,8 @@ use serde::Serialize;
 /// 井字遊戲的錯誤類型。
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("錯誤的格號，請填1至9間的數字！")]
+    WrongStep,
     /// 格子已被劃記。
     #[error("已非空格，不能再次畫記！")]
     AlreadyOccupied,
@@ -111,6 +113,9 @@ impl Game {
     pub fn play(&mut self, num: usize) -> Result<(), Error> {
         if self.is_over {                    // 一開始先判斷遊戲結束就報錯
             return Err(Error::GameOver);
+        }
+        if !(1..=9).contains(&num) {
+            return Err(Error::WrongStep);
         }
         let index = num - 1;
         if self.cells[index].is_some() {
