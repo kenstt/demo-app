@@ -74,13 +74,16 @@ pub async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> 
     Ok(warp::reply::with_status(json, code))
 }
 
-impl From<service::tic_tac_toe::Error> for AppError {
-    fn from(value: service::tic_tac_toe::Error) -> Self {
+
+type GameSrvError = service::tic_tac_toe::Error; // 定義給下面用的type。
+
+impl From<GameSrvError> for AppError {
+    fn from(value: GameSrvError) -> Self {
         match value {
-            service::tic_tac_toe::Error::GameRules(message) => AppError::UserFriendly("違反遊戲規則".into(), message),
-            service::tic_tac_toe::Error::GameOver => AppError::BadRequest("遊戲已結束".into()),
-            service::tic_tac_toe::Error::NotFound => AppError::NotFound("遊戲不存在".into()),
-            service::tic_tac_toe::Error::Unknown => AppError::InternalServerError,
+            GameSrvError::GameRules(message) => AppError::UserFriendly("違反遊戲規則".into(), message),
+            GameSrvError::GameOver => AppError::BadRequest("遊戲已結束".into()),
+            GameSrvError::NotFound => AppError::NotFound("遊戲不存在".into()),
+            GameSrvError::Unknown => AppError::InternalServerError,
         }
     }
 }
