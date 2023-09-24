@@ -16,3 +16,6 @@ Cargo.lock
 .idea/
 logs/
 .env
+
+app/.vite/
+app/dist/
