@@ -110,7 +110,7 @@ mod tests {
     #[test]
     fn test_new() {
         let service = InMemoryTicTacToeService::new();
-        let (id, game) = service.new().unwrap();  // unwrap取得Result內容
+        let (id, game) = service.new_game().unwrap();  // unwrap取得Result內容
         assert_eq!(id, 1);
         assert_eq!(game.is_over, false);
         let is_empty = game.cells.iter().all(|&x| x == None); // 驗證每一格都是空的
@@ -121,7 +121,7 @@ mod tests {
     #[test]
     fn test_get() {                                    // 測試 Happy Path
         let service = InMemoryTicTacToeService::new();
-        let _ = service.new();                         // 新局的變數我們不需要，直接 _ 丟棄
+        let _ = service.new_game();                         // 新局的變數我們不需要，直接 _ 丟棄
         let game = service.get(1).unwrap();            // 透過 get 取得 game
         assert_eq!(game.is_over, false);               // 簡單驗一下內容
         let is_empty = game.cells.iter().all(|x| *x == None);
@@ -139,7 +139,7 @@ mod tests {
     #[test]
     fn test_play() {
         let service = InMemoryTicTacToeService::new();
-        let _ = service.new();                      // 建立一筆id=1的遊戲局
+        let _ = service.new_game();                      // 建立一筆id=1的遊戲局
         let game = service.play(1, 1).unwrap();     //呼叫 play
         assert_eq!(game.cells[0], Some(core::tic_tac_toe::Symbol::O));
 
@@ -150,7 +150,7 @@ mod tests {
     #[test]
     fn test_play_two_round() {
         let service = InMemoryTicTacToeService::new();
-        let _ = service.new();
+        let _ = service.new_game();
         let game = service.play(1, 1).unwrap();
         let game = if game.cells[3] == Some(core::tic_tac_toe::Symbol::X) {
             service.play(1, 2).unwrap()
@@ -164,7 +164,7 @@ mod tests {
     #[test]
     fn test_delete() {
         let service = InMemoryTicTacToeService::new();
-        let _ = service.new();                         // 先製造1個才有東西刪除
+        let _ = service.new_game();                         // 先製造1個才有東西刪除
         let result = service.delete(1);                // 執行刪除
         assert_eq!(result.is_ok(), true);              // 驗證執行成功
         let game = service.get(1);                     // 覆驗已無編號1資料
