@@ -18,7 +18,7 @@ impl From<core::tic_tac_toe::Error> for Error {
     }
 }
 
-pub trait TicTacToeService {
+pub trait TicTacToeService: Clone + Send + Sync {
     fn new_game(&self) -> Result<(usize, Game), Error>;
     fn get(&self, id: usize) -> Result<Game, Error>;
     fn play(&self, id: usize, num: usize) -> Result<Game, Error>;
@@ -29,14 +29,15 @@ pub trait TicTacToeService {
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
-struct InMemoryTicTacToeService {
+#[derive(Clone)]
+pub struct InMemoryTicTacToeService {
     // 定義InMemory服務
     games: Arc<Mutex<HashMap<usize, Game>>>, // 這什麼型別!?，請看下方補充教材
 }
 
 impl InMemoryTicTacToeService {
     // 實作建構式，這次我們改用new
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             games: Arc::new(Mutex::new(HashMap::new())),
         }

@@ -11,5 +11,6 @@ path = "src/play.rs"
 
 [dependencies]
 rand = { worksapce = true }
+serde = { workspace = true }
 thiserror = { worksapce = true }
 

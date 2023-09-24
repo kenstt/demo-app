@@ -2,6 +2,9 @@ use warp::Filter;
 
 mod logger;             // 抽出去的檔案
 mod config;
+mod tic_tac_toe;
+
+use service::tic_tac_toe::TicTacToeService;
 
 #[tokio::main]
 async fn main() {
@@ -18,7 +21,12 @@ async fn main() {
         })
         .with(warp::trace::named("hello"));
 
+    let game_service = service::tic_tac_toe::InMemoryTicTacToeService::new();
+    game_service.new_game().unwrap();     // db是空的，先製造一筆資料
+    let api_games = tic_tac_toe::router_games(game_service);
+
     let routes = hello
+        .or(api_games)
         .with(warp::trace::request());
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
