@@ -11,3 +11,13 @@ export interface Game {                   // 遊戲資料結構
 }
 
 export type GameSet = [number, Game];    // POST 回傳資料結構
+
+export const emptyGame = (): GameSet =>  [0, {
+  cells: [
+    null, null, null,
+    null, null, null,
+    null, null, null,
+  ],
+  is_over: false,
+  winner: null,
+}];
