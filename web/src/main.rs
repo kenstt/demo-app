@@ -3,6 +3,7 @@ use warp::Filter;
 mod logger;             // 抽出去的檔案
 mod config;
 mod tic_tac_toe;
+mod error;
 
 use service::tic_tac_toe::TicTacToeService;
 
@@ -27,6 +28,7 @@ async fn main() {
 
     let routes = hello
         .or(api_games)
+        .recover(error::handle_rejection)
         .with(warp::trace::request());
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;

@@ -1,6 +1,6 @@
-use std::convert::Infallible;
-use warp::Filter;
+use warp::{Filter, Rejection};
 use service::tic_tac_toe::TicTacToeService;
+use crate::error::AppError;
 
 pub fn router_games(
     service: impl TicTacToeService          // 把範例db改成我們的service
@@ -31,7 +31,7 @@ pub fn games_get(
 pub async fn handle_games_get(
     id: usize,
     service: impl TicTacToeService,
-) -> Result<impl warp::Reply, Infallible> {
-    let game = service.get(id).unwrap();      // 先用unwrap讓程式通過，等等再來處理error
+) -> Result<impl warp::Reply, Rejection> {
+    let game = service.get(id).map_err(AppError::from)?;;
     Ok(warp::reply::json(&game))
 }

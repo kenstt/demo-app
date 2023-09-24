@@ -1,0 +1,88 @@
+use std::convert::Infallible;
+use std::error::Error;
+use warp::{Rejection, Reply};
+use warp::http::StatusCode;
+
+#[derive(Debug)]
+pub enum AppError {
+    // 我們在這定義web專案可能會遇到的錯誤
+    UserFriendly(String, String),
+    // 回傳訊息給予前端User使用
+    BadRequest(String),
+    // 錯誤的要求
+    NotFound(String),
+    // 找不到資源
+    Unauthorized,
+    // 未經授權的操作
+    InternalServerError,              // 其他未歸類錯誤
+}
+
+#[derive(serde::Serialize)]
+struct AppErrorMessage {
+    // 非 2XX 回應的Body
+    message: String,
+    // 錯誤的訊息內容
+    details: Option<String>,          // 有關錯誤的細節資料（如果有的話）
+}
+
+pub async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> {
+    let code;                          // http 回應代碼
+    let message;                      // http 回應訊息
+    let mut details = None;          // http 回應細息
+
+    if let Some(AppError::UserFriendly(msg, detail)) = err.find() {
+        code = StatusCode::BAD_REQUEST;        // HTTP回應代碼
+        message = msg.as_str();                // 所有message的賦值都要同一個類型，所以我們統一轉成 &str
+        details = Some(detail.to_string());
+    } else if let Some(AppError::BadRequest(msg)) = err.find() {
+        code = StatusCode::BAD_REQUEST;
+        message = msg.as_str();
+    } else if let Some(AppError::NotFound(msg)) = err.find() {
+        code = StatusCode::NOT_FOUND;
+        message = msg.as_str();
+    } else if let Some(AppError::Unauthorized) = err.find() {
+        code = StatusCode::UNAUTHORIZED;
+        message = "UNAUTHORIZED";
+    } else if let Some(AppError::InternalServerError) = err.find() {
+        code = StatusCode::INTERNAL_SERVER_ERROR;
+        message = "INTERNAL_SERVER_ERROR";
+    } else if let Some(e) = err.find::<warp::filters::body::BodyDeserializeError>() {
+        // This error happens if the body could not be deserialized correctly
+        // We can use the cause to analyze the error and customize the error message
+        message = match e.source() {
+            Some(cause) => {
+                if cause.to_string().contains("denom") {
+                    "FIELD_ERROR: denom"
+                } else {
+                    "BAD_REQUEST"
+                }
+            }
+            None => "BAD_REQUEST",
+        };
+        code = StatusCode::BAD_REQUEST;
+    } else {
+        tracing::error!("unhandled rejection: {:?}", err); // 把範例print改輸出至log
+        code = StatusCode::INTERNAL_SERVER_ERROR;
+        message = "UNHANDLED_REJECTION";      // <= 字串值本身也是&str類別
+    }
+
+    let json = warp::reply::json(&AppErrorMessage {
+        message: message.into(),
+        details: details.into(),
+    });
+
+    Ok(warp::reply::with_status(json, code))
+}
+
+impl From<service::tic_tac_toe::Error> for AppError {
+    fn from(value: service::tic_tac_toe::Error) -> Self {
+        match value {
+            service::tic_tac_toe::Error::GameRules(message) => AppError::UserFriendly("違反遊戲規則".into(), message),
+            service::tic_tac_toe::Error::GameOver => AppError::BadRequest("遊戲已結束".into()),
+            service::tic_tac_toe::Error::NotFound => AppError::NotFound("遊戲不存在".into()),
+            service::tic_tac_toe::Error::Unknown => AppError::InternalServerError,
+        }
+    }
+}
+
+impl warp::reject::Reject for AppError {}
