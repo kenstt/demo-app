@@ -19,7 +19,7 @@ impl From<core::tic_tac_toe::Error> for Error {
 }
 
 pub trait TicTacToeService {
-    fn new(&self) -> Result<(usize, Game), Error>;
+    fn new_game(&self) -> Result<(usize, Game), Error>;
     fn get(&self, id: usize) -> Result<Game, Error>;
     fn play(&self, id: usize, num: usize) -> Result<Game, Error>;
     fn delete(&self, id: usize) -> Result<(), Error>;
@@ -44,7 +44,7 @@ impl InMemoryTicTacToeService {
 }
 
 impl TicTacToeService for InMemoryTicTacToeService {
-    fn new(&self) -> Result<(usize, Game), Error> {
+    fn new_game(&self) -> Result<(usize, Game), Error> {
         let mut games = self.games
             .lock()                // LockResult<MutexGuard<HashMap<…>>>
             .unwrap();             // MutexGuard<HashMap<…>>
