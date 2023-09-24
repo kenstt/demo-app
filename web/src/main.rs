@@ -14,6 +14,10 @@ async fn main() {
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
     logger::register_tracing(non_blocking);
 
+    let cors = warp::cors()
+        .allow_any_origin()
+        .allow_methods(vec!["GET", "PUT", "POST", "DELETE"]);
+
     let hello = warp::path("hello")
         .and(warp::get())
         .map(|| {
@@ -29,6 +33,7 @@ async fn main() {
     let routes = hello
         .or(api_games)
         .recover(error::handle_rejection)
+        .with(cors)
         .with(warp::trace::request());
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
