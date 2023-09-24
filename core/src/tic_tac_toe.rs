@@ -1,6 +1,6 @@
 use rand::prelude::SliceRandom;
 use std::fmt::{Display, Formatter};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// 井字遊戲的錯誤類型。
 #[derive(Debug, thiserror::Error)]
@@ -16,14 +16,14 @@ pub enum Error {
 }
 
 /// 井字遊戲的符號。
-#[derive(Copy, Clone, Debug, PartialEq, Serialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Symbol {
     O,
     X,
 }
 
 /// 井字遊戲棋局
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Game {
     /// 棋盤格子，每個格子可能是空的，或是被劃記的符號。
     pub cells: [Option<Symbol>; 9],

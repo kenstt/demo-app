@@ -82,3 +82,109 @@ pub fn games_delete(
         })
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use warp::http::StatusCode;
+    use warp::test::request;
+    use service::tic_tac_toe::InMemoryTicTacToeService;
+    use crate::error::handle_rejection;
+    use my_core::tic_tac_toe::Game;
+
+    #[tokio::test]
+    async fn test_games_get() {
+        let service = InMemoryTicTacToeService::new();
+        let (id, _) = service.new_game().unwrap();
+        let api = games_get(service);
+
+        let res = request()
+            .method("GET")
+            .path(&format!("/tic_tac_toe/{}", id))
+            .reply(&api)
+            .await;
+
+        assert_eq!(res.status(), StatusCode::OK);
+
+        let body = res.into_body();    // 取得body的Bytes
+        let game: Game = serde_json::from_slice(&body).unwrap(); // 反序列化為物件
+        assert_eq!(game.is_over, false);
+        assert_eq!(game.winner, None);
+        let is_empty = game.cells.iter().all(|x| *x == None);
+        assert_eq!(is_empty, true);
+    }
+
+    #[tokio::test]
+    async fn test_games_create() {
+        let service = InMemoryTicTacToeService::new();
+        let api = games_create(service);
+
+        let res = request()
+            .method("POST")
+            .path("/tic_tac_toe")
+            .reply(&api)
+            .await;
+
+        assert_eq!(res.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_games_play() {
+        let service = InMemoryTicTacToeService::new();
+        let (id, _) = service.new_game().unwrap();
+        let api = games_play(service);
+
+        let res = request()
+            .method("PUT")
+            .path(&format!("/tic_tac_toe/{}/{}", id, 1))
+            .reply(&api)
+            .await;
+
+        assert_eq!(res.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_games_delete() {
+        let service = InMemoryTicTacToeService::new();
+        let (id, _) = service.new_game().unwrap();
+        let api = games_delete(service);
+
+        let res = request()
+            .method("DELETE")
+            .path(&format!("/tic_tac_toe/{}", id))
+            .reply(&api)
+            .await;
+
+        assert_eq!(res.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[tokio::test]
+    async fn test_games_delete_not_found() {
+        let service = InMemoryTicTacToeService::new();
+        let api = games_delete(service)
+            .recover(handle_rejection);    // 記得加error handling
+
+        let res = request()               // 沒加我們寫的handle_rejection會變500
+            .method("DELETE")
+            .path(&format!("/tic_tac_toe/{}", 12))
+            .reply(&api)
+            .await;
+
+        assert_eq!(res.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn test_games_play_non_empty() {
+        let service = InMemoryTicTacToeService::new();
+        let (id, _) = service.new_game().unwrap();
+        let api = games_play(service.clone()).recover(handle_rejection);
+        service.play(id, 1).unwrap();     // 模擬已下第一格
+
+        let res = request()
+            .method("PUT")
+            .path(&format!("/tic_tac_toe/{}/{}", id, 1)) // 重複下第一格 應報錯
+            .reply(&api)
+            .await;
+
+        assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+    }
+}

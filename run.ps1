@@ -3,6 +3,7 @@ Write-Host "1) [core]: 在命令列試玩井字遊戲"
 Write-Host "2) [core]: 跑單元測試"
 Write-Host "3) [web]: 執行 WebApi Server"
 Write-Host "4) [service]: 執行 Service 測試"
+Write-Host "5) [web]: 執行 跑單元測試"
 $opt = Read-Host "："
 
 if ($opt -eq 1) {
@@ -13,4 +14,6 @@ if ($opt -eq 1) {
     cargo watch -q -c -w ./web -w ./service -w ./core -x 'run -p web'
 } elseif ($opt -eq 4) {
     cargo watch -q -c -w ./service -w ./core -x 'test -p service'
+} elseif ($opt -eq 5) {
+    cargo watch -q -c -w ./web -w ./service -w ./core -x 'test -p web'
 }
