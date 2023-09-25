@@ -5,6 +5,10 @@
   import { onMount } from 'svelte';
 
   let gameSet = emptyGame(); // 在model裡新增一個fn建立空白物件，讓下面標籤中的資料綁定不報錯。
+  $: wonLine = gameSet[1].won_line;
+  $: game = gameSet[1];
+  $: gameId = gameSet[0];
+
   const newGame = async () => {
     // 把呼叫api包成這裡用的function
     gameSet = await api.ticTacToe.newGame();
@@ -14,7 +18,7 @@
   let error: string | null = null;
   const playGame = async (index: number) => {
     try {
-      gameSet = await api.ticTacToe.play(gameSet[0], index);
+      gameSet = await api.ticTacToe.play(gameId, index);
       error = null;
     } catch (e: unknown) {
       let err = e as ErrorResponse;
@@ -44,10 +48,10 @@
 </button>
 
 <h2 class="font-bold py-2 px-4 rounded text-2xl">
-  局號：{gameSet[0]}，
-  {#if gameSet[1].winner}
-    遊戲結束，贏家：{gameSet[1].winner}！
-  {:else if gameSet[1].is_over && !gameSet[1].winner}
+  局號：{gameId}，
+  {#if game.winner}
+    遊戲結束，贏家：{game.winner}！
+  {:else if game.is_over && !game.winner}
     遊戲結束：平手！
   {:else}
     遊戲正在進行中...
@@ -56,11 +60,11 @@
 </h2>
 
 <div class="w-96 grid grid-cols-3">
-  {#each gameSet[1].cells as symbol, index}
+  {#each game.cells as symbol, index}
     <button
       class="h-32 text-9xl text-amber-500 border-2 border-amber-500 rounded-md"
-      class:text-blue-500={gameSet[1].won_line?.includes(index + 1)}
-      class:bg-amber-100={gameSet[1].won_line?.includes(index + 1)}
+      class:text-blue-500={wonLine?.includes(index + 1)}
+      class:bg-amber-100={wonLine?.includes(index + 1)}
       on:click={() => playGame(index + 1)}>{symbol ?? ' '}</button
     >
   {/each}
