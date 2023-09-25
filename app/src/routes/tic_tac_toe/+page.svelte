@@ -59,6 +59,8 @@
   {#each gameSet[1].cells as symbol, index}
     <button
       class="h-32 text-9xl text-amber-500 border-2 border-amber-500 rounded-md"
+      class:text-blue-500={gameSet[1].won_line?.includes(index + 1)}
+      class:bg-amber-100={gameSet[1].won_line?.includes(index + 1)}
       on:click={() => playGame(index + 1)}>{symbol ?? ' '}</button
     >
   {/each}

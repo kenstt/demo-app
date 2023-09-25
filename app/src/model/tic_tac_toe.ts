@@ -15,6 +15,7 @@ export interface Game {
   ];
   is_over: boolean;
   winner?: GameSymbol;
+  won_line?: Array<number>;
 }
 
 export type GameSet = [number, Game]; // POST 回傳資料結構
@@ -25,6 +26,7 @@ export const emptyGame = (): GameSet => [
     cells: [null, null, null, null, null, null, null, null, null],
     is_over: false,
     winner: null,
+    won_line: [],
   },
 ];
 
