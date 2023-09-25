@@ -21,3 +21,8 @@ export const emptyGame = (): GameSet =>  [0, {
   is_over: false,
   winner: null,
 }];
+
+export type ErrorResponse = {
+  message: string;
+  details?: string;
+};

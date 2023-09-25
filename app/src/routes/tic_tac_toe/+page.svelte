@@ -1,5 +1,6 @@
 <script lang="ts">
   import { api } from "../../api";
+  import type { ErrorResponse } from '../../model/tic_tac_toe';
   import { emptyGame } from "../../model/tic_tac_toe";
   import { onMount } from "svelte";
 
@@ -14,10 +15,11 @@
     try {
       gameSet = await api.ticTacToe.play(gameSet[0], index);
       error = null;
-    } catch (e) {
-      let msg = e.message;
-      if (e.details) {
-        msg += `: ${e.details}`;
+    } catch (e: unknown) {
+      let err = e as ErrorResponse;
+      let msg = err.message;
+      if (err.details) {
+        msg += `: ${err.details}`;
       }
       error = msg;
     }
@@ -56,7 +58,7 @@
   {#each gameSet[1].cells as symbol, index}
     <button
       class="h-32 text-9xl text-amber-500 border-2 border-amber-500 rounded-md"
-      on:click={playGame.bind(this, index+1)}
+      on:click={() => playGame(index+1)}
     >{symbol ?? ' '}</button>
   {/each}
 </div>
