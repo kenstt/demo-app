@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { api } from "../../api";
+  import { api } from '../../api';
   import type { ErrorResponse } from '../../model/tic_tac_toe';
-  import { emptyGame } from "../../model/tic_tac_toe";
-  import { onMount } from "svelte";
+  import { emptyGame } from '../../model/tic_tac_toe';
+  import { onMount } from 'svelte';
 
-  let gameSet = emptyGame();    // 在model裡新增一個fn建立空白物件，讓下面標籤中的資料綁定不報錯。
-  const newGame = async () => {    // 把呼叫api包成這裡用的function
+  let gameSet = emptyGame(); // 在model裡新增一個fn建立空白物件，讓下面標籤中的資料綁定不報錯。
+  const newGame = async () => {
+    // 把呼叫api包成這裡用的function
     gameSet = await api.ticTacToe.newGame();
     // newGame2 = api.ticTacToe.newGame();
-  }
+  };
 
   let error: string | null = null;
   const playGame = async (index: number) => {
@@ -23,23 +24,23 @@
       }
       error = msg;
     }
-  }
+  };
 
   onMount(async () => {
-    await newGame();            // 初始化先從server取得新局
-  })
+    await newGame(); // 初始化先從server取得新局
+  });
 
   // let newGame2 = api.ticTacToe.newGame();
   // let playGame2 = (id, step) => {
   //   newGame2 = api.ticTacToe.play(id, step);
   // }
-
 </script>
 
 <button
   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
   on:click={newGame}
-> 新遊戲
+>
+  新遊戲
 </button>
 
 <h2 class="font-bold py-2 px-4 rounded text-2xl">
@@ -51,18 +52,17 @@
   {:else}
     遊戲正在進行中...
   {/if}
-  <span class="text-red-500 text-lg">  {error ?? ''}  </span>
+  <span class="text-red-500 text-lg"> {error ?? ''} </span>
 </h2>
 
 <div class="w-96 grid grid-cols-3">
   {#each gameSet[1].cells as symbol, index}
     <button
       class="h-32 text-9xl text-amber-500 border-2 border-amber-500 rounded-md"
-      on:click={() => playGame(index+1)}
-    >{symbol ?? ' '}</button>
+      on:click={() => playGame(index + 1)}>{symbol ?? ' '}</button
+    >
   {/each}
 </div>
-
 
 <!--{#await newGame2}-->
 <!--  <p>...loading</p>-->
