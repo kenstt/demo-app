@@ -33,6 +33,8 @@ pub struct Game {
     pub winner: Option<Symbol>,
     /// 劃記符號，交替下棋使用，預設為O先下。
     pub symbols: [Symbol; 2],
+    /// 贏的連線，如果沒有則為`None`，如果有則為九宮格位置（1~9）
+    pub won_line: Option<[usize; 3]>,
 }
 
 // 如果你想要實作getter的話，這裡是範例參考：
@@ -195,6 +197,7 @@ impl Game {
     /// assert_eq!(game.check_winner(), Some(Symbol::O));
     /// ```
     pub fn check_winner(&mut self) -> Option<Symbol> {
+        self.won_line = None;
         let win_patterns = [                 // 連線的index情境
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫
             [0, 3, 6], [1, 4, 7], [2, 5, 8], // 直
@@ -207,8 +210,22 @@ impl Game {
                 self.cells[idx[2]],
             ];
             match line {
-                [Some(Symbol::O), Some(Symbol::O), Some(Symbol::O)] => return Some(Symbol::O),
-                [Some(Symbol::X), Some(Symbol::X), Some(Symbol::X)] => return Some(Symbol::X),
+                [Some(Symbol::O), Some(Symbol::O), Some(Symbol::O)] => {
+                    let won: [usize; 3] = idx
+                        .iter()
+                        .map(|x| *x + 1)
+                        .collect::<Vec<usize>>()
+                        .try_into()
+                        .unwrap();
+                    self.won_line = Some(won);
+                    // self.won_line = Some(*idx);
+                    return Some(Symbol::O);
+                }
+                [Some(Symbol::X), Some(Symbol::X), Some(Symbol::X)] => {
+                    let won: [usize; 3] = idx.iter().map(|x| *x + 1).collect::<Vec<usize>>().try_into().unwrap();
+                    self.won_line = Some(won);
+                    return Some(Symbol::X);
+                }
                 _ => (),
             }
         }
@@ -224,6 +241,7 @@ impl Default for Game {
             is_over: false,
             winner: None,
             symbols: [Symbol::O, Symbol::X], // 未來開心的話可以改順序，或加上奇怪的符號(?)△☆★ （？
+            won_line: None,
         }
     }
 }
@@ -278,6 +296,7 @@ mod test {
             None, None, None,
         ];
         assert_eq!(game.check_winner(), Some(Symbol::O));
+        assert_eq!(game.won_line, Some([1, 2, 3]));
 
         game.cells = [
             Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
@@ -285,6 +304,7 @@ mod test {
             None, None, None,
         ];
         assert_eq!(game.check_winner(), None);
+        assert_eq!(game.won_line, None);
 
         game.cells = [
             Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
@@ -292,6 +312,7 @@ mod test {
             Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
         ];
         assert_eq!(game.check_winner(), None);
+        assert_eq!(game.won_line, None);
 
         game.cells = [
             Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
@@ -299,6 +320,7 @@ mod test {
             Some(Symbol::O), Some(Symbol::O), Some(Symbol::O),
         ];
         assert_eq!(game.check_winner(), Some(Symbol::O));
+        assert_eq!(game.won_line, Some([7, 8, 9]));
 
         game.cells = [
             Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
@@ -306,6 +328,7 @@ mod test {
             Some(Symbol::O), Some(Symbol::X), Some(Symbol::O),
         ];
         assert_eq!(game.check_winner(), None);
+        assert_eq!(game.won_line, None);
 
         game.cells = [
             Some(Symbol::O), Some(Symbol::O), Some(Symbol::X),
@@ -313,6 +336,7 @@ mod test {
             Some(Symbol::X), Some(Symbol::X), Some(Symbol::O),
         ];
         assert_eq!(game.check_winner(), Some(Symbol::X));
+        assert_eq!(game.won_line, Some([3, 5, 7]));
     }
 
     #[test]
