@@ -14,7 +14,9 @@ const newGame = async (): Promise<GameSet> => {
 
   if (response.ok) {
     return await response.json();
-  }  // todo: error handling
+  }  else {
+    return Promise.reject(await response.json());
+  }
 }
 
 const play = async (id: number, step: number): Promise<GameSet> => {
