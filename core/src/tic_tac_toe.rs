@@ -209,24 +209,22 @@ impl Game {
                 self.cells[idx[1]],
                 self.cells[idx[2]],
             ];
-            match line {
+            let winner = match line {
                 [Some(Symbol::O), Some(Symbol::O), Some(Symbol::O)] => {
-                    let won: [usize; 3] = idx
-                        .iter()
-                        .map(|x| *x + 1)
-                        .collect::<Vec<usize>>()
-                        .try_into()
-                        .unwrap();
-                    self.won_line = Some(won);
-                    // self.won_line = Some(*idx);
-                    return Some(Symbol::O);
+                    Some(Symbol::O)
                 }
                 [Some(Symbol::X), Some(Symbol::X), Some(Symbol::X)] => {
-                    let won: [usize; 3] = idx.iter().map(|x| *x + 1).collect::<Vec<usize>>().try_into().unwrap();
-                    self.won_line = Some(won);
-                    return Some(Symbol::X);
+                    Some(Symbol::X)
                 }
-                _ => (),
+                _ => None,
+            };
+            if winner.is_some() {
+                self.won_line = Some(idx.iter()
+                    .map(|x| *x + 1)
+                    .collect::<Vec<usize>>()
+                    .try_into()
+                    .unwrap());
+                return winner;    // 已有winner，直接中斷比對，並回傳比對結果
             }
         }
         None                                  // 檢查完無符合條件回傳無
