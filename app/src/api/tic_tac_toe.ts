@@ -84,7 +84,7 @@ const newGameTauri = async (): Promise<GameSet> => {
 const playGameTauri = async (id: number, num: number): Promise<GameSet> => {
   try {
     const game = await invoke('play_game', { id, num }); // 兩個參數
-    return Promise.resolve([id, game as Game]);
+    return [id, game as Game];
   } catch (e) {
     return Promise.reject(e);
   }
@@ -93,7 +93,6 @@ const playGameTauri = async (id: number, num: number): Promise<GameSet> => {
 const deleteGameTauri = async (id: number): Promise<void> => {
   try {
     await invoke('delete_game', { id });
-    return Promise.resolve();
   } catch (e) {
     return Promise.reject(e);
   }
