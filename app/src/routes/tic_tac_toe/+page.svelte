@@ -10,7 +10,7 @@
   $: game = gameSet[1];
   $: gameId = gameSet[0];
   $: errorMessage = error ? error?.message + (error?.details ? `，${error?.details}` : '') : '';
-  let id: number;
+  let id: number = 1;
 
   const newGame = async () => {
     error = null;
@@ -30,6 +30,7 @@
     try {
       gameSet = await api.ticTacToe.getGame(id);
     } catch (e) {
+      // console.log(e);
       error = e as ErrorResponse;
     }
   };
@@ -61,7 +62,7 @@
     <input
       class="w-16 border-2 border-blue-500 rounded-md h-10 text-center text-2xl"
       on:keydown={(e) => e.key === 'Enter' && goto(id)}
-      bind:value={id}
+      value={id} on:input={(e) => {id = Number(e.target.value)}}
     />
     <span>筆</span>
     <button
