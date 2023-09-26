@@ -4,83 +4,95 @@
   import { emptyGame } from '../../model/tic_tac_toe';
   import { onMount } from 'svelte';
 
-  let gameSet = emptyGame(); // 在model裡新增一個fn建立空白物件，讓下面標籤中的資料綁定不報錯。
+  let error: ErrorResponse | null = null;
+  let gameSet = emptyGame();
   $: wonLine = gameSet[1].won_line;
   $: game = gameSet[1];
   $: gameId = gameSet[0];
+  $: errorMessage = error ? error?.message + (error?.details ? `，${error?.details}` : '') : '';
+  let id: number;
 
   const newGame = async () => {
-    // 把呼叫api包成這裡用的function
+    error = null;
     gameSet = await api.ticTacToe.newGame();
-    // newGame2 = api.ticTacToe.newGame();
   };
 
-  let error: string | null = null;
   const playGame = async (index: number) => {
     try {
       gameSet = await api.ticTacToe.play(gameId, index);
       error = null;
     } catch (e: unknown) {
-      let err = e as ErrorResponse;
-      let msg = err.message;
-      if (err.details) {
-        msg += `: ${err.details}`;
-      }
-      error = msg;
+      error = e as ErrorResponse;
     }
   };
-
+  const goto = async (id: number) => {
+    error = null;
+    try {
+      gameSet = await api.ticTacToe.getGame(id);
+    } catch (e) {
+      error = e as ErrorResponse;
+    }
+  };
+  const deleteGame = async () => {
+    error = null;
+    await api.ticTacToe.deleteGame(gameId);
+    gameSet = emptyGame();
+  };
   onMount(async () => {
-    await newGame(); // 初始化先從server取得新局
+    await newGame();
   });
-
-  // let newGame2 = api.ticTacToe.newGame();
-  // let playGame2 = (id, step) => {
-  //   newGame2 = api.ticTacToe.play(id, step);
-  // }
 </script>
 
-<button
-  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-  on:click={newGame}
->
-  新遊戲
-</button>
+<div class="grid grid-cols-4 justify-center items-baseline gap-3">
+  <button
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-2xl"
+    on:click={newGame}
+  >
+    新遊戲
+  </button>
+  <button
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-2xl"
+    on:click={deleteGame}
+  >
+    刪除此局
+  </button>
+  <div class="px-5 text-2xl col-span-2">
+    <span> 跳至第 </span>
+    <input
+      class="w-16 border-2 border-blue-500 rounded-md h-10 text-center text-2xl"
+      on:keydown={(e) => e.key === 'Enter' && goto(id)}
+      bind:value={id}
+    />
+    <span>筆</span>
+    <button
+      class="border-blue-500 hover:bg-blue-700 text-blue-500 border-2 font-bold py-2 px-4 rounded-lg text-lg h-12"
+      on:click={() => goto(id)}>GO</button
+    >
+  </div>
+</div>
 
 <h2 class="font-bold py-2 px-4 rounded text-2xl">
   局號：{gameId}，
-  {#if game.winner}
+  {#if !gameId}
+    請先開啟新遊戲！
+  {:else if game.winner}
     遊戲結束，贏家：{game.winner}！
   {:else if game.is_over && !game.winner}
     遊戲結束：平手！
   {:else}
     遊戲正在進行中...
   {/if}
-  <span class="text-red-500 text-lg"> {error ?? ''} </span>
+  <span class="text-red-500 text-lg"> {errorMessage} </span>
 </h2>
 
 <div class="w-96 grid grid-cols-3">
   {#each game.cells as symbol, index}
     <button
-      class="h-32 text-9xl text-amber-500 border-2 border-amber-500 rounded-md"
+      class="h-32 text-9xl text-amber-500 border-2 border-amber-500 rounded-md hover:bg-amber-100 hover:text-white"
       class:text-blue-500={wonLine?.includes(index + 1)}
       class:bg-amber-100={wonLine?.includes(index + 1)}
-      on:click={() => playGame(index + 1)}>{symbol ?? ' '}</button
-    >
+      on:click={() => playGame(index + 1)}
+    >{symbol ?? ' '}
+    </button>
   {/each}
 </div>
-
-<!--{#await newGame2}-->
-<!--  <p>...loading</p>-->
-<!--{:then value}-->
-<!--  <div> 第{value[0]}局</div>-->
-<!--  <div class="grid grid-cols-3">-->
-<!--    {#each value[1].cells as symbol, index}-->
-<!--      <div>-->
-<!--        <button on:click={playGame2.bind(this, value[0], index+1)}> {index}: {symbol}</button>-->
-<!--      </div>-->
-<!--    {/each}-->
-<!--  </div>-->
-<!--{:catch error}-->
-<!--  發生錯誤：{error.message} {error.details}-->
-<!--{/await }-->
