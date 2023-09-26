@@ -4,7 +4,7 @@
 mod error;
 mod tic_tac_toe;
 
-use tic_tac_toe::rest_api::{get_game, new_game};
+use tic_tac_toe::rest_api::{get_game, new_game, play_game, delete_game};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -16,7 +16,7 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             greet,
-            get_game, new_game, // 這裡加入我們剛剛寫的api client
+            get_game, new_game, play_game, delete_game,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
