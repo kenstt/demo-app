@@ -10,8 +10,12 @@
   }
 
   const get_game = async (id) => {
-    const res = await invoke('get_game', {id});
-    console.log(res);
+    try {
+      const res = await invoke('get_game', {id});
+      console.log(res);    // await執行成功，印出正確結果
+    } catch (e) {
+      console.log(e);      // 執行失敗，接到error印出
+    }
   }
   const new_game = async () => {
     const res = await invoke('new_game');
