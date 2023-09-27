@@ -33,21 +33,25 @@ fn main_struct() {
     // println!("student name, {}!", student.name); // 移除會報錯
 }
 
-fn longer_string(s1: String, s2: String) -> String { // 取長的字串
+// fn longer_string(s1: String, s2: String) -> String { // 取長的字串
+fn longer_string_life<'a>(s1: &'a String, s2: &'a String) ->  String { // 加上生命週期
     if s1.len() > s2.len() {
-        s1        // 把 s1 所有權移交給fn呼叫者
+        s1.to_string()
     } else {
-        s2        // 把 s2 所有權移交給fn呼叫者
-    }             // s1, s2 都被 drop
+        s2.to_string()
+    }
+    // s1, s2 都被 drop 了，但會依if路徑回傳 .to_string後的字串結果
 }
 
 fn main() {
-    let a = String::from("Rust");
+    let mut a = String::from("Rust");
     let b = String::from("Svelte");
     // let longer = longer_string(a, b);    // a 和 b 都被move了
-    let longer = longer_string(a.clone(), b.clone());
+    // let longer = longer_string(a.clone(), b.clone());
+    let longer = longer_string_life(&a, &b); // ←這裡被強迫改成借用的方式
 
-    println!("a: len: {:2}, {:?}", a.len(), a); // :2 是佔用2格位置
-    println!("b: len: {:2}, {:?}", b.len(), b); // :? 是Debug，字串會加"
-    println!("   longer is >> {:?} <<", longer);
+    a.push_str(" is awesome");                   // 修改 a
+    println!("a: len: {:2}, {:?}", a.len(), a);  // a 修改了
+    println!("b: len: {:2}, {:?}", b.len(), b);
+    println!("   longer is >> {:?} <<", longer); // longer還是舊的
 }
