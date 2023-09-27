@@ -2,6 +2,7 @@ use crate::error::ErrorResponse;
 use my_core::tic_tac_toe::Game;
 use tauri::State;
 use crate::context::Context;
+use std::time::Instant;
 
 #[tauri::command]
 pub async fn new_game(ctx: State<'_, Context>) -> Result<(isize, Game), ErrorResponse> {
@@ -12,8 +13,12 @@ pub async fn new_game(ctx: State<'_, Context>) -> Result<(isize, Game), ErrorRes
 
 #[tauri::command]
 pub async fn get_game(id: usize, ctx: State<'_, Context>) -> Result<Game, ErrorResponse> {
+    let start = Instant::now();
     let url = ctx.base_url().join(&format!("tic_tac_toe/{}", id)).unwrap();
     let game = ctx.http_client().get(url).send().await?;
+    // let game = reqwest::Client::new().get(url).send().await?;
+    let duration = start.elapsed();
+    println!("Time elapsed in expensive_function() is: {:?}", duration);
     unwrap_game(game).await
 }
 
