@@ -34,11 +34,11 @@ fn main_struct() {
 }
 
 // fn longer_string(s1: String, s2: String) -> String { // 取長的字串
-fn longer_string_life<'a>(s1: &'a String, s2: &'a String) ->  String { // 加上生命週期
+fn longer_string_life<'a>(s1: &'a String, s2: &'a String) -> &'a String { // 加上生命週期
     if s1.len() > s2.len() {
-        s1.to_string()
+        &s1
     } else {
-        s2.to_string()
+        &s2
     }
     // s1, s2 都被 drop 了，但會依if路徑回傳 .to_string後的字串結果
 }
@@ -51,6 +51,9 @@ fn main() {
     let longer = longer_string_life(&a, &b); // ←這裡被強迫改成借用的方式
 
     a.push_str(" is awesome");                   // 修改 a
+
+    let longer = longer_string_life(&a, &b);     // 再執行一次
+
     println!("a: len: {:2}, {:?}", a.len(), a);  // a 修改了
     println!("b: len: {:2}, {:?}", b.len(), b);
     println!("   longer is >> {:?} <<", longer); // longer還是舊的
