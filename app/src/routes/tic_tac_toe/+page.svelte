@@ -39,6 +39,11 @@
     await api.ticTacToe.deleteGame(gameId);
     gameSet = emptyGame();
   };
+  const onInput = (e: Event) => {
+    // console.log(e);
+    const target = e.target as HTMLInputElement;
+    id = Number(target.value);
+  };
   onMount(async () => {
     await newGame();
   });
@@ -62,7 +67,7 @@
     <input
       class="w-16 border-2 border-blue-500 rounded-md h-10 text-center text-2xl"
       on:keydown={(e) => e.key === 'Enter' && goto(id)}
-      value={id} on:input={(e) => {id = Number(e.target.value)}}
+      value={id} on:input={onInput}
     />
     <span>筆</span>
     <button
