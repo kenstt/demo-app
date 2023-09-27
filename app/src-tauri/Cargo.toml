@@ -15,6 +15,7 @@ tauri-build = { version = "1.4", features = [] }
 [dependencies]
 my-core = { path = "../../core", package = "core" }
 
+dotenvy = { workspace = true }
 reqwest = { workspace = true }
 tauri = { version = "1.4", features = ["shell-open"] }
 thiserror = { workspace = true }

@@ -1,34 +1,33 @@
 use crate::error::ErrorResponse;
 use my_core::tic_tac_toe::Game;
+use tauri::State;
+use crate::context::Context;
 
 #[tauri::command]
-pub async fn new_game() -> Result<(isize, Game), ErrorResponse> {
-    let url = format!("http://localhost:3030/tic_tac_toe");
-    let client = reqwest::Client::new();
-    let game = client.post(url).send().await?;
+pub async fn new_game(ctx: State<'_, Context>) -> Result<(isize, Game), ErrorResponse> {
+    let url = ctx.base_url().join("tic_tac_toe").unwrap();
+    let game = ctx.http_client().post(url).send().await?;
     unwrap_game(game).await
 }
 
 #[tauri::command]
-pub async fn get_game(id: usize) -> Result<Game, ErrorResponse> {
-    let url = format!("http://localhost:3030/tic_tac_toe/{}", id);
-    let game = reqwest::get(url).await?;
+pub async fn get_game(id: usize, ctx: State<'_, Context>) -> Result<Game, ErrorResponse> {
+    let url = ctx.base_url().join(&format!("tic_tac_toe/{}", id)).unwrap();
+    let game = ctx.http_client().get(url).send().await?;
     unwrap_game(game).await
 }
 
 #[tauri::command]
-pub async fn play_game(id: usize, num: usize) -> Result<Game, ErrorResponse> {
-    let url = format!("http://localhost:3030/tic_tac_toe/{id}/{num}");
-    let client = reqwest::Client::new();
-    let game = client.put(url).send().await?;
+pub async fn play_game(id: usize, num: usize, ctx: State<'_, Context>) -> Result<Game, ErrorResponse> {
+    let url = ctx.base_url().join(&format!("tic_tac_toe/{}/{}", id, num)).unwrap();
+    let game = ctx.http_client().put(url).send().await?;
     unwrap_game(game).await
 }
 
 #[tauri::command]
-pub async fn delete_game(id: usize) -> Result<(), ErrorResponse> {
-    let url = format!("http://localhost:3030/tic_tac_toe/{id}");
-    let client = reqwest::Client::new();
-    client.delete(url).send().await?.text().await?;
+pub async fn delete_game(id: usize, ctx: State<'_, Context>) -> Result<(), ErrorResponse> {
+    let url = ctx.base_url().join(&format!("tic_tac_toe/{}", id)).unwrap();
+    ctx.http_client().delete(url).send().await?.text().await?;
     Ok(())
 }
 
