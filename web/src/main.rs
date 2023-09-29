@@ -5,5 +5,5 @@ async fn main() {
     config::init();
     let _logger = logger::init();
     let routers = routers::all_routers();
-    warp::serve(routers).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(routers).run(([0, 0, 0, 0], config::http_port())).await;
 }

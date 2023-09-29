@@ -19,3 +19,6 @@ logs/
 
 app/.vite/
 app/dist/
+
+key.pem
+cert.pem
