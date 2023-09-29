@@ -4,9 +4,9 @@
 mod error;
 mod tic_tac_toe;
 mod context;
-mod logger;
 
 use crate::context::Context;
+use service::logger::Logger;
 
 use tic_tac_toe::rest_api::{get_game, new_game, play_game, delete_game};
 
@@ -18,7 +18,7 @@ fn greet(name: &str) -> String {
 
 fn main() {
     dotenvy::dotenv().ok();                     // 讀取環境變數.env
-    let _logger = logger::init();
+    let _logger = service::logger::Logger::builder().use_env().build();
     tracing::info!("Starting tauri app");
     let context = Context::load();     // 初始化app共享物件
     tauri::Builder::default()

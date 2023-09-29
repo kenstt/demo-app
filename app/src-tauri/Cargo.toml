@@ -14,6 +14,7 @@ tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
 my-core = { path = "../../core", package = "core" }
+service = { path = "../../service", package = "service" }
 
 dotenvy = { workspace = true }
 reqwest = { workspace = true }
@@ -21,8 +22,6 @@ tauri = { version = "1.4", features = ["shell-open"] }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
-tracing-appender = { workspace = true }
-tracing-subscriber = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
