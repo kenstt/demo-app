@@ -4,6 +4,7 @@
 mod error;
 mod tic_tac_toe;
 mod context;
+mod logger;
 
 use crate::context::Context;
 
@@ -17,6 +18,8 @@ fn greet(name: &str) -> String {
 
 fn main() {
     dotenvy::dotenv().ok();                     // 讀取環境變數.env
+    let _logger = logger::init();
+    tracing::info!("Starting tauri app");
     let context = Context::load();     // 初始化app共享物件
     tauri::Builder::default()
         .manage(context)    // 註冊為tauri的狀態物件
