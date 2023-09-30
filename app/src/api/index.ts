@@ -1,16 +1,20 @@
 import type { TicTacToeApi } from './tic_tac_toe';
-import { ticTacToeApi, ticTacToeApiTauri } from './tic_tac_toe';
+import { ticTacToeApi, ticTacToeApiTauri, ticTacToeApiTauriOffline, ticTacToeApiWasm, } from './tic_tac_toe';
 
 export interface Api {
   ticTacToe: TicTacToeApi;
+  ticTacToeOffline: TicTacToeApi;
+
 }
 
-const httpApi: Api = {    // 把之前 api rename 成 httpApi 區別 tauri
+const httpApi: Api = {
   ticTacToe: ticTacToeApi,
+  ticTacToeOffline: ticTacToeApiWasm,
 };
 
-const tauriApi: Api = {    // 這部分沒有動
+const tauriApi: Api = {
   ticTacToe: ticTacToeApiTauri,
+  ticTacToeOffline: ticTacToeApiTauriOffline,
 };
 // @ts-ignore
-export const api: Api = window.__TAURI_IPC__ ? tauriApi : httpApi;
+export const api: Api = window?.__TAURI_IPC__ ? tauriApi : httpApi;

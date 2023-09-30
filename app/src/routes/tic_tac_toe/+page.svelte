@@ -3,7 +3,6 @@
   import type { ErrorResponse } from '../../model/tic_tac_toe';
   import { emptyGame } from '../../model/tic_tac_toe';
   import { onMount } from 'svelte';
-  import { ticTacToeApiTauriOffline as offlineApi } from '../../api/tic_tac_toe';
 
   let isOffline = false;
   $: isOffline ? (gameSet = emptyGame()) : (gameSet = emptyGame());
@@ -17,14 +16,14 @@
   let id: number = 1;
 
   const newGame = async () => {
-    gameSet = isOffline ? await offlineApi.newGame() : await api.ticTacToe.newGame();
+    gameSet = isOffline ? await api.ticTacToeOffline.newGame() : await api.ticTacToe.newGame();
     error = null;
   };
 
   const playGame = async (index: number) => {
     try {
       gameSet = isOffline
-        ? await offlineApi.play(gameId, index)
+        ? await api.ticTacToeOffline.play(gameId, index)
         : await api.ticTacToe.play(gameId, index);
       error = null;
     } catch (e: unknown) {
@@ -35,7 +34,7 @@
     error = null;
     try {
       gameSet = isOffline
-        ? await offlineApi.getGame(id)
+        ? await api.ticTacToeOffline.getGame(id)
         : await api.ticTacToe.getGame(id);
     } catch (e) {
       // console.log(e);
@@ -45,7 +44,7 @@
   const deleteGame = async () => {
     error = null;
     isOffline
-      ? await offlineApi.deleteGame(gameId)
+      ? await api.ticTacToeOffline.deleteGame(gameId)
       : await api.ticTacToe.deleteGame(gameId);
     gameSet = emptyGame();
   };

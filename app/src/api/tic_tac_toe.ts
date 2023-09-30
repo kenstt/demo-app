@@ -1,6 +1,7 @@
 import { httpClient } from './ky';
-import type { Game, GameSet } from '../model/tic_tac_toe';
+import type { WasmResponse, Game, GameSet } from '../model/tic_tac_toe'
 import { invoke } from "@tauri-apps/api/tauri";
+import init, { new_game, get_game, play_game, delete_game } from '../../../wasm/pkg/wasm'
 
 export interface TicTacToeApi {
   // 定義本模組介面
@@ -117,4 +118,41 @@ export const ticTacToeApiTauriOffline: TicTacToeApi = {
   getGame: (id) => getGameTauri(id, true),
   newGame: () => newGameTauri(true),
   play: (id, num) => playGameTauri(id, num, true),
+};
+
+export const ticTacToeApiWasm: TicTacToeApi = {
+  async newGame(): Promise<GameSet> {
+    await init();
+    let result: WasmResponse<GameSet> = new_game();
+    if (result.Ok) {
+      return result.Ok;
+    } else {
+      return Promise.reject(result.Err);
+    }
+  },
+  async getGame(id: number): Promise<GameSet> {
+    await init();
+    let result: WasmResponse<Game> = get_game(id);
+    if (result.Ok) {
+      return [id, result.Ok];
+    } else {
+      return Promise.reject(result.Err);
+    }
+  },
+  async play(id: number, num: number): Promise<GameSet> {
+    await init();
+    let result: WasmResponse<Game> = play_game(id, num);
+    if (result.Ok) {
+      return [id, result.Ok];
+    } else {
+      return Promise.reject(result.Err);
+    }
+  },
+  async deleteGame(id: number): Promise<unknown> {
+    await init();    // 初始化wasm後，才可以使用wasm的fn
+    let result: WasmResponse<unknown> = delete_game(id);
+    if (!result.Ok) {
+      return Promise.reject(result.Err);
+    }
+  },
 };

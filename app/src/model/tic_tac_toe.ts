@@ -34,3 +34,8 @@ export type ErrorResponse = {
   message: string;
   details?: string;
 };
+
+export interface WasmResponse<T> { // T 可以換成不同的類別
+  Ok: T;
+  Err: ErrorResponse;              // 包成我們之前的錯誤訊息格式
+}
