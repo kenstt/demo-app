@@ -8,6 +8,7 @@ echo 4: [service] unit test
 echo 5: [web] unit test
 echo 6: [tauri] dev
 echo 7: [web] run web api server with HTTPS
+echo 8: [wasm] build wasm
 read VAR
 
 if [[ $VAR -eq 1 ]]
@@ -31,4 +32,7 @@ elif [[ $VAR -eq 6 ]]
 elif [[ $VAR -eq 7 ]]
   then
   cargo watch -q -c -w ./web -w ./service -w ./core -x 'run -p web --bin https'
+elif [[ $VAR -eq 8 ]]
+  then
+  cargo watch -q -c -w ./wasm/ -w ./service/ -w ./core/ -x 'build -p wasm && wasm-pack build --target web ./wasm'
 fi

@@ -1,0 +1,21 @@
+[package]
+name = "wasm"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[build]
+target = "wasm32-unknown-unknown"
+
+[dependencies]
+my-core = { path = "../core", package = "core" }
+service = { path = "../service" }
+
+getrandom = { version = "0.2", features = ["js"] }
+once_cell = { version = "1.18" }
+serde = { workspace = true }
+serde-wasm-bindgen = { version = "0.6" }
+wasm-bindgen = { version = "0.2" }
+wasm-bindgen-futures = { version = "0.4" }

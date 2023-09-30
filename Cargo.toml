@@ -5,6 +5,7 @@ members = [
     "core",
     "service",
     "web",
+    "wasm",
     "examples/*",
 ]
 
