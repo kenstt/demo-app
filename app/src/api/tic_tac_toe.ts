@@ -63,36 +63,42 @@ export const ticTacToeApi: TicTacToeApi = {
   deleteGame,
 };
 
-const getGameTauri = async (id: number): Promise<GameSet> => {
+const getGameTauri = async (id: number, isOffline: boolean = false): Promise<GameSet> => {
   try {
-    const game = await invoke('get_game', { id });   // { id:id } 縮寫
+    let method: string = isOffline ? 'get_game_e' : 'get_game';
+    const game = await invoke(method, {id});
     return [id, game as Game];                       // 組 GameSet
   } catch (e) {                                      // 補捉rust的Err(e)
     return Promise.reject(e);
   }
 };
 
-const newGameTauri = async (): Promise<GameSet> => {
+const newGameTauri = async (isOffline: boolean = false): Promise<GameSet> => {
   try {
-    const gameSet = await invoke('new_game');  // 無參數
+    let method: string = isOffline ? 'new_game_e' : 'new_game';
+    const gameSet = await invoke(method);
     return gameSet as GameSet;
   } catch (e) {
     return Promise.reject(e);
   }
 };
 
-const playGameTauri = async (id: number, num: number): Promise<GameSet> => {
+const playGameTauri = async (
+  id: number, num: number, isOffline: boolean = false
+): Promise<GameSet> => {
   try {
-    const game = await invoke('play_game', { id, num }); // 兩個參數
+    let method: string = isOffline ? 'play_game_e' : 'play_game';
+    const game = await invoke(method, {id, num});
     return [id, game as Game];
   } catch (e) {
     return Promise.reject(e);
   }
 };
 
-const deleteGameTauri = async (id: number): Promise<void> => {
+const deleteGameTauri = async (id: number, isOffline: boolean = false): Promise<void> => {
   try {
-    await invoke('delete_game', { id });
+    let method: string = isOffline ? 'delete_game_e' : 'delete_game';
+    await invoke(method, {id});
   } catch (e) {
     return Promise.reject(e);
   }
@@ -103,4 +109,12 @@ export const ticTacToeApiTauri: TicTacToeApi = { // 實現與http同樣介面
   getGame: getGameTauri,
   newGame: newGameTauri,
   play: playGameTauri,
+};
+
+/** 離線模式 */
+export const ticTacToeApiTauriOffline: TicTacToeApi = {
+  deleteGame: (id) => deleteGameTauri(id, true),
+  getGame: (id) => getGameTauri(id, true),
+  newGame: () => newGameTauri(true),
+  play: (id, num) => playGameTauri(id, num, true),
 };
