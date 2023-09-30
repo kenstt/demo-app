@@ -3,6 +3,10 @@
   import type { ErrorResponse } from '../../model/tic_tac_toe';
   import { emptyGame } from '../../model/tic_tac_toe';
   import { onMount } from 'svelte';
+  import { ticTacToeApiTauriOffline as offlineApi } from '../../api/tic_tac_toe';
+
+  let isOffline = false;
+  $: isOffline ? (gameSet = emptyGame()) : (gameSet = emptyGame());
 
   let error: ErrorResponse | null = null;
   let gameSet = emptyGame();
@@ -13,13 +17,15 @@
   let id: number = 1;
 
   const newGame = async () => {
+    gameSet = isOffline ? await offlineApi.newGame() : await api.ticTacToe.newGame();
     error = null;
-    gameSet = await api.ticTacToe.newGame();
   };
 
   const playGame = async (index: number) => {
     try {
-      gameSet = await api.ticTacToe.play(gameId, index);
+      gameSet = isOffline
+        ? await offlineApi.play(gameId, index)
+        : await api.ticTacToe.play(gameId, index);
       error = null;
     } catch (e: unknown) {
       error = e as ErrorResponse;
@@ -28,7 +34,9 @@
   const goto = async (id: number) => {
     error = null;
     try {
-      gameSet = await api.ticTacToe.getGame(id);
+      gameSet = isOffline
+        ? await offlineApi.getGame(id)
+        : await api.ticTacToe.getGame(id);
     } catch (e) {
       // console.log(e);
       error = e as ErrorResponse;
@@ -36,7 +44,9 @@
   };
   const deleteGame = async () => {
     error = null;
-    await api.ticTacToe.deleteGame(gameId);
+    isOffline
+      ? await offlineApi.deleteGame(gameId)
+      : await api.ticTacToe.deleteGame(gameId);
     gameSet = emptyGame();
   };
   const onInput = (e: Event) => {
@@ -72,9 +82,20 @@
     <span>筆</span>
     <button
       class="border-blue-500 hover:bg-blue-700 text-blue-500 border-2 font-bold py-2 px-4 rounded-lg text-lg h-12"
-      on:click={() => goto(id)}>GO</button
+      on:click={() => goto(id)}>GO
+    </button
     >
+    <label class="relative inline-flex items-end cursor-pointer">
+      <input type="checkbox" value="" class="sr-only peer" bind:checked={isOffline}/>
+      <div
+        class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+      />
+      <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-800"
+      >{isOffline ? '本機' : '線上'}</span
+      >
+    </label>
   </div>
+
 </div>
 
 <h2 class="font-bold py-2 px-4 rounded text-2xl">
