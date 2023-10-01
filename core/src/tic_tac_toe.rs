@@ -2,6 +2,8 @@ use rand::prelude::SliceRandom;
 use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 
+const SYMBOLS: [Symbol; 2] = [Symbol::O, Symbol::X];
+
 /// 井字遊戲的錯誤類型。
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -31,10 +33,8 @@ pub struct Game {
     pub is_over: bool,
     /// 贏家，若無則為None，若有則為Some(Symbol)。
     pub winner: Option<Symbol>,
-    /// 劃記符號，交替下棋使用，預設為O先下。
-    pub symbols: [Symbol; 2],
     /// 贏的連線，如果沒有則為`None`，如果有則為九宮格位置（1~9）
-    pub won_line: Option<[usize; 3]>,
+    pub won_line: Option<[u8; 3]>,
 }
 
 // 如果你想要實作getter的話，這裡是範例參考：
@@ -45,8 +45,6 @@ impl Game {
     pub fn is_over(&self) -> bool { self.is_over }
     /// 取得贏家，如果沒有則為`None`，如果有則為`O`或`X`
     pub fn winner(&self) -> Option<Symbol> { self.winner }
-    /// 取得使用符號清單，預設為`[O, X]`，下棋時會依序輪流使用
-    pub fn symbols(&self) -> [Symbol; 2] { self.symbols }
 }
 
 impl Game {
@@ -123,7 +121,7 @@ impl Game {
         if self.cells[index].is_some() {
             return Err(Error::AlreadyOccupied);
         }
-        let symbol = self.symbols[self.current_step() % 2];
+        let symbol = SYMBOLS[self.current_step() % 2];
         self.cells[index] = Some(symbol);
         self.check_over();                   // 玩家每一步結束後判斷是否結束
         Ok(())
@@ -220,8 +218,8 @@ impl Game {
             };
             if winner.is_some() {
                 self.won_line = Some(idx.iter()
-                    .map(|x| *x + 1)
-                    .collect::<Vec<usize>>()
+                    .map(|x| u8::try_from(*x + 1).unwrap())
+                    .collect::<Vec<u8>>()
                     .try_into()
                     .unwrap());
                 return winner;    // 已有winner，直接中斷比對，並回傳比對結果
@@ -238,7 +236,6 @@ impl Default for Game {
             cells: [None; 9],
             is_over: false,
             winner: None,
-            symbols: [Symbol::O, Symbol::X], // 未來開心的話可以改順序，或加上奇怪的符號(?)△☆★ （？
             won_line: None,
         }
     }
@@ -429,5 +426,12 @@ mod test {
         game.play_with_counter(1).unwrap();
         assert_eq!(game.cells[0], Some(Symbol::O));
         assert_eq!(game.current_step(), 2);
+    }
+
+    use std::mem::size_of;
+
+    #[test]
+    fn the_size_of_game_is_15_bytes() {
+        assert_eq!(size_of::<Game>(), 15);
     }
 }
