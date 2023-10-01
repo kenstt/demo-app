@@ -196,16 +196,14 @@ impl Game {
     /// ```
     pub fn check_winner(&mut self) -> Option<Symbol> {
         self.won_line = None;
-        let win_patterns = [                 // 連線的index情境
+        let win_patterns: [[u8; 3]; 8] = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫
             [0, 3, 6], [1, 4, 7], [2, 5, 8], // 直
             [0, 4, 8], [2, 4, 6],            // 斜
         ];
         for idx in win_patterns.iter() {     // 用for 逐項檢查上面8條線
             let line = [                     // 把資料代入
-                self.cells[idx[0]],
-                self.cells[idx[1]],
-                self.cells[idx[2]],
+                self.cells[idx[0] as usize], self.cells[idx[1] as usize], self.cells[idx[2] as usize],
             ];
             let winner = match line {
                 [Some(Symbol::O), Some(Symbol::O), Some(Symbol::O)] => {
