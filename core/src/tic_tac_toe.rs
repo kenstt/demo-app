@@ -34,7 +34,7 @@ pub struct Game {
     /// 贏家，若無則為None，若有則為Some(Symbol)。
     pub winner: Option<Symbol>,
     /// 贏的連線，如果沒有則為`None`，如果有則為九宮格位置（1~9）
-    pub won_line: Option<[u8; 3]>,
+    pub won_line: Option<[u32; 3]>,
 }
 
 // 如果你想要實作getter的話，這裡是範例參考：
@@ -196,7 +196,7 @@ impl Game {
     /// ```
     pub fn check_winner(&mut self) -> Option<Symbol> {
         self.won_line = None;
-        let win_patterns: [[u8; 3]; 8] = [
+        let win_patterns: [[u32; 3]; 8] = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫
             [0, 3, 6], [1, 4, 7], [2, 5, 8], // 直
             [0, 4, 8], [2, 4, 6],            // 斜
@@ -216,8 +216,8 @@ impl Game {
             };
             if winner.is_some() {
                 self.won_line = Some(idx.iter()
-                    .map(|x| u8::try_from(*x + 1).unwrap())
-                    .collect::<Vec<u8>>()
+                    .map(|x| u32::try_from(*x + 1).unwrap())
+                    .collect::<Vec<u32>>()
                     .try_into()
                     .unwrap());
                 return winner;    // 已有winner，直接中斷比對，並回傳比對結果
@@ -429,7 +429,7 @@ mod test {
     use std::mem::size_of;
 
     #[test]
-    fn the_size_of_game_is_15_bytes() {
-        assert_eq!(size_of::<Game>(), 15);
+    fn the_size_of_game_is_28_bytes() {
+        assert_eq!(size_of::<Game>(), 28);
     }
 }
