@@ -14,3 +14,9 @@ rand = { worksapce = true }
 serde = { workspace = true }
 thiserror = { worksapce = true }
 
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "my_benchmark"
+harness = false
