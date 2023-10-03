@@ -4,7 +4,9 @@
 mod error;
 mod tic_tac_toe;
 mod context;
+mod hello_grpc;
 
+use crate::hello_grpc::say_hello;
 use crate::context::Context;
 use service::logger::Logger;
 
@@ -18,10 +20,12 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-fn main() {
+#[tokio::main]    // 把原本的 main 改成 async main
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();                     // 讀取環境變數.env
     let _logger = service::logger::Logger::builder().use_env().build();
     tracing::info!("Starting tauri app");
+    say_hello().await;
     let context = Context::load();     // 初始化app共享物件
     let game_service = InMemoryTicTacToeService::new(); // 建立 在tauri執行的service
     tauri::Builder::default()
@@ -34,4 +38,6 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    Ok(())
 }

@@ -11,16 +11,19 @@ edition = "2021"
 
 [build-dependencies]
 tauri-build = { version = "1.4", features = [] }
+tonic-build = { workspace = true }
 
 [dependencies]
 my-core = { path = "../../core", package = "core" }
 service = { path = "../../service", package = "service" }
 
 dotenvy = { workspace = true }
+prost = { workspace = true }
 reqwest = { workspace = true }
 tauri = { version = "1.4", features = ["shell-open"] }
 thiserror = { workspace = true }
 tokio = { workspace = true }
+tonic = { workspace = true }
 tracing = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

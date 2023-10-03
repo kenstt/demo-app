@@ -7,6 +7,7 @@ Write-Host "5) [web]: 執行 跑單元測試"
 Write-Host "6) [app]: 執行 tauri 前端 UI"
 Write-Host "7) [web]: 執行 WebApi Server: HTTPS"
 Write-Host "8) [wasm]: 建置 wasm"
+Write-Host "9) [web]: 執行gRPC Server"
 $opt = Read-Host "："
 
 if ($opt -eq 1) {
@@ -25,4 +26,6 @@ if ($opt -eq 1) {
     cargo watch -q -c -w ./web -w ./service -w ./core -x 'run -p web --bin https'
 } elseif ($opt -eq 8) {
     cargo watch -q -c -w ./wasm/ -w ./service/ -w ./core/ -x 'build -p wasm && wasm-pack build --target web ./wasm'
+} elseif ($opt -eq 9) {
+    cargo watch -q -c -w ./web/ -w ./service/ -w ./core/ -x 'run -p web --bin grpc'
 }

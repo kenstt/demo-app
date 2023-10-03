@@ -1,0 +1,44 @@
+syntax = "proto3";       // 使用的protobuf版本，可參考官網使用說明
+
+package game;            // 命名空間的概念，避免與其他同名物件衝突
+
+service TicTacToe {                        // 定義服務類別
+  rpc GetGame (IdRequest) returns (Game);  // 程序名稱(參數類別)returns(回傳類別)
+  rpc Play (PlayRequest) returns (Game);
+  rpc NewGame (EmptyRequest) returns (GameSet);
+  rpc DeleteGame (IdRequest) returns (EmptyResponse);
+}
+
+message EmptyRequest {}            // 無內容欄位的類別，在此例提供給無參數方法使用
+message EmptyResponse {}           // 無內容欄位的類別，在此例提供給無回傳資料使用
+
+message IdRequest {                // 傳遞Id的請求物件
+  uint32 id = 1;                   // 類別應該很明顯，欄位名稱id，1代表順序
+}
+
+message PlayRequest {              // play方法的請求物件
+  uint32 id = 1;                   // 第一個欄位是id
+  uint32 num = 2;                  // 第二個欄位是格號
+}
+
+enum Symbol {                      // enum的個數上線依程式語言而定
+  O = 0;                           // enum的值不是順序，是int值
+  X = 1;                           // rust 我們使用的prost會翻成 i32 的格式
+  None = 2;                        // 配合protobuf我們把None也設為一個選項
+}
+
+message Game {                     // 遊戲棋局物件
+  repeated Symbol cells = 1;       // repeated 表示可重覆，就是Array或list
+  bool is_over = 2;                // boolean 值
+  optional Symbol winner = 3;      // optional表欄位選填，rust會翻成Option<T>
+  repeated uint32 won_line = 4;
+}
+
+message GameSet {                  // 搭配棋局Id的物件
+  uint32 id = 1;                   // 局號
+  Game game = 2;                   // 遊戲內容
+}
+
+message GameSetList {              // 所有棋局的物件
+  repeated GameSet games = 1;      // 清單
+}
