@@ -89,3 +89,17 @@ impl From<GameSrvError> for AppError {
 }
 
 impl warp::reject::Reject for AppError {}
+
+use tonic::{Code, Status};
+
+impl From<AppError> for Status {
+    fn from(value: AppError) -> Self {
+        match value {
+            AppError::UserFriendly(e, m) => Status::with_details(Code::Aborted, e, m.into()),
+            AppError::BadRequest(s) => Status::unavailable(s),
+            AppError::NotFound(s) => Status::not_found(s),
+            AppError::Unauthorized => Status::unauthenticated(""),
+            AppError::InternalServerError => Status::unknown(""),
+        }
+    }
+}
