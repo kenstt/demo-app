@@ -25,9 +25,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();                     // 讀取環境變數.env
     let _logger = service::logger::Logger::builder().use_env().build();
     tracing::info!("Starting tauri app");
-    say_hello().await;
+
     let context = Context::load();     // 初始化app共享物件
     let game_service = InMemoryTicTacToeService::new(); // 建立 在tauri執行的service
+    println!("{}", say_hello(context.channel(), "tonic").await);
+
     tauri::Builder::default()
         .manage(context)    // 註冊為tauri的狀態物件
         .manage(game_service)        // 註冊game_service服務
