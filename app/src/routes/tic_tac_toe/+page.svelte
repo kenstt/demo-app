@@ -16,7 +16,9 @@
   let id: number = 1;
 
   const newGame = async () => {
+    let now = performance.now();
     gameSet = isOffline ? await api.ticTacToeOffline.newGame() : await api.ticTacToe.newGame();
+    console.log(`took ${performance.now() - now} ms`); // 測量經過時間 performance
     error = null;
   };
 
