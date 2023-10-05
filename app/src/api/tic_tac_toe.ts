@@ -66,7 +66,7 @@ export const ticTacToeApi: TicTacToeApi = {
 
 const getGameTauri = async (id: number, isOffline: boolean = false): Promise<GameSet> => {
   try {
-    let method: string = isOffline ? 'get_game_e' : 'get_game';
+    let method: string = isOffline ? 'get_game_e' : 'get_game_grpc';
     const game = await invoke(method, {id});
     return [id, game as Game];                       // 組 GameSet
   } catch (e) {                                      // 補捉rust的Err(e)
@@ -76,7 +76,7 @@ const getGameTauri = async (id: number, isOffline: boolean = false): Promise<Gam
 
 const newGameTauri = async (isOffline: boolean = false): Promise<GameSet> => {
   try {
-    let method: string = isOffline ? 'new_game_e' : 'new_game';
+    let method: string = isOffline ? 'new_game_e' : 'new_game_grpc';
     const gameSet = await invoke(method);
     return gameSet as GameSet;
   } catch (e) {
@@ -88,7 +88,7 @@ const playGameTauri = async (
   id: number, num: number, isOffline: boolean = false
 ): Promise<GameSet> => {
   try {
-    let method: string = isOffline ? 'play_game_e' : 'play_game';
+    let method: string = isOffline ? 'play_game_e' : 'play_game_grpc';
     const game = await invoke(method, {id, num});
     return [id, game as Game];
   } catch (e) {
@@ -98,7 +98,7 @@ const playGameTauri = async (
 
 const deleteGameTauri = async (id: number, isOffline: boolean = false): Promise<void> => {
   try {
-    let method: string = isOffline ? 'delete_game_e' : 'delete_game';
+    let method: string = isOffline ? 'delete_game_e' : 'delete_game_grpc';
     await invoke(method, {id});
   } catch (e) {
     return Promise.reject(e);

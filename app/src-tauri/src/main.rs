@@ -10,9 +10,10 @@ use crate::hello_grpc::say_hello;
 use crate::context::Context;
 use service::logger::Logger;
 
-use tic_tac_toe::rest_api::{get_game, new_game, play_game, delete_game};
 use service::tic_tac_toe::InMemoryTicTacToeService;
+use tic_tac_toe::rest_api::{get_game, new_game, play_game, delete_game};
 use tic_tac_toe::embedded::{get_game_e, new_game_e, play_game_e, delete_game_e};
+use tic_tac_toe::grpc::{get_game_grpc, new_game_grpc, play_game_grpc, delete_game_grpc};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -37,6 +38,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             greet,
             get_game, new_game, play_game, delete_game,
             get_game_e, new_game_e, play_game_e, delete_game_e,
+            get_game_grpc, new_game_grpc, play_game_grpc, delete_game_grpc,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

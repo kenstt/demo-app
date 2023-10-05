@@ -54,3 +54,16 @@ impl From<service::tic_tac_toe::Error> for ErrorResponse {
         }
     }
 }
+
+use tonic::Status;
+
+impl From<Status> for ErrorResponse {           // 錯誤的mapping
+    fn from(value: Status) -> Self {
+        ErrorResponse {
+            message: value.message().into(),    // Status.meesage為 &str
+            details: Some(std::str::from_utf8(value.details())
+                .unwrap_or_default()    // details是 &[u8]
+                .to_string()),
+        }
+    }
+}
