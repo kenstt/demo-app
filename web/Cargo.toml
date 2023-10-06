@@ -10,6 +10,7 @@ my-core = { path = "../core", package = "core" }
 service = { path = "../service" }
 
 dotenvy = { workspace = true }
+futures-util = { workspace = true }
 prost = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
