@@ -1,5 +1,7 @@
 use web::{config, routers};
 use service::logger::Logger;
+use web::app_context::AppContext;
+use web::web_socket::polling_message;
 
 #[tokio::main]        // warp::serve 方法是 Future，所以main要改成async
 async fn main() {
@@ -10,7 +12,9 @@ async fn main() {
         // .try_set_level("warn")       // builder的方法回傳self
         // .remove_package("hyper")     // 所以可以一直 chaining
         .build();                       // 最後再建立
-    let routers = routers::all_routers();
+    let app_context = AppContext::default();    // 加入App狀態機
+    polling_message(&app_context).await;                // 加這行
+    let routers = routers::all_routers(app_context.clone()); // 注入
     warp::serve(routers)
         .tls()
         .cert_path(config::tls_cert_path())
