@@ -16,5 +16,6 @@ const tauriApi: Api = {
   ticTacToe: ticTacToeApiTauri,
   ticTacToeOffline: ticTacToeApiTauriOffline,
 };
+
 // @ts-ignore
-export const api: Api = window?.__TAURI_IPC__ ? tauriApi : httpApi;
+export const api: Api = (typeof window !== 'undefined' && window?.__TAURI_IPC__) ? tauriApi : httpApi;

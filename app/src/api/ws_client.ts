@@ -1,6 +1,7 @@
 let ws : WebSocket;
 
 export const wsClient = (): WebSocket => {
+  if (typeof window === 'undefined') { return {} as WebSocket; }
   const url = `${import.meta.env.VITE_WS_BASE_URL}/echo`;
 
   // 連線物件不存在，或連線狀態不是OPEN，就重新建立一個連線物件
