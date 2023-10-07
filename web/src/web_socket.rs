@@ -68,7 +68,7 @@ async fn send_one_message(my_id: usize, msg: Message, ctx: &AppContext) {
     let new_msg = format!("<User#{}>: {}", my_id, msg);  // 訊息帶用戶id
 
     // 找出特定 id 的 tx，並傳送文字訊息
-    for (&uid, tx) in ctx.ws_connections.read().await.iter().filter(|(&uid, _)| uid == my_id) {
+    for (_, tx) in ctx.ws_connections.read().await.iter().filter(|(&uid, _)| uid == my_id) {
         if let Err(_disconnected) = tx.send(Message::text(new_msg.clone())) {}
     }
 }
@@ -84,7 +84,7 @@ async fn send_all_message(my_id: usize, msg: Message, ctx: &AppContext) {
     let new_msg = format!("<User#{}>: {}", my_id, msg);  // 訊息帶用戶id
 
     // 遍歷所有的連線端，傳送文字訊息
-    for (&uid, tx) in ctx.ws_connections.read().await.iter() {
+    for (_, tx) in ctx.ws_connections.read().await.iter() {
         if let Err(_disconnected) = tx.send(Message::text(new_msg.clone())) {}
     }
 }

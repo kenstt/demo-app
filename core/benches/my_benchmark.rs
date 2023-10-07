@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 
 use core::tic_tac_toe::{Game, Symbol};
 
@@ -54,7 +54,7 @@ fn test_check_winner() {
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("check winner", |b| b.iter(|| test_check_winner()));
+    c.bench_function("check winner", |b| b.iter(test_check_winner));
 }
 
 criterion_group!(benches, criterion_benchmark);

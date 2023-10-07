@@ -148,7 +148,7 @@ export const ticTacToeApiWasm: TicTacToeApi = {
       return Promise.reject(result.Err);
     }
   },
-  async deleteGame(id: number): Promise<unknown> {
+  async deleteGame(id: number): Promise<void> {
     await init();    // 初始化wasm後，才可以使用wasm的fn
     let result: WasmResponse<unknown> = delete_game(id);
     if (!result.Ok) {

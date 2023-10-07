@@ -26,7 +26,7 @@ impl From<Game> for CoreGame {                     // mapping
                 }
             },
             won_line: {
-                if value.won_line.len() == 0 {  // Vec<u32>
+                if value.won_line.is_empty() {  // Vec<u32>
                     None
                 } else {
                     Some(value.won_line.try_into().unwrap())

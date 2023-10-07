@@ -107,10 +107,10 @@ mod tests {
 
         let body = res.into_body();    // 取得body的Bytes
         let game: Game = serde_json::from_slice(&body).unwrap(); // 反序列化為物件
-        assert_eq!(game.is_over, false);
+        assert!(!game.is_over);
         assert_eq!(game.winner, None);
-        let is_empty = game.cells.iter().all(|x| *x == None);
-        assert_eq!(is_empty, true);
+        let is_empty = game.cells.iter().all(|x| x.is_none());
+        assert!(is_empty);
     }
 
     #[tokio::test]

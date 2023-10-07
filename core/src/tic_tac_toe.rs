@@ -25,7 +25,7 @@ pub enum Symbol {
 }
 
 /// 井字遊戲棋局
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Game {
     /// 棋盤格子，每個格子可能是空的，或是被劃記的符號。
     pub cells: [Option<Symbol>; 9],
@@ -216,7 +216,7 @@ impl Game {
             };
             if winner.is_some() {
                 self.won_line = Some(idx.iter()
-                    .map(|x| u32::try_from(*x + 1).unwrap())
+                    .map(|x| *x + 1)
                     .collect::<Vec<u32>>()
                     .try_into()
                     .unwrap());
@@ -224,18 +224,6 @@ impl Game {
             }
         }
         None                                  // 檢查完無符合條件回傳無
-    }
-}
-
-impl Default for Game {
-    // 替Game實作預設(無參數建構式)
-    fn default() -> Self {     // 這裡的大寫Self指的是Self的Type，就是指Game
-        Self {                 // 所以這邊的兩個Self換成Game也是一樣的結果
-            cells: [None; 9],
-            is_over: false,
-            winner: None,
-            won_line: None,
-        }
     }
 }
 
@@ -341,7 +329,7 @@ mod test {
             None, None, None,
         ];
         game.check_over();
-        assert_eq!(game.is_over, true);
+        assert!(game.is_over);
         assert_eq!(game.winner, Some(Symbol::O));
     }
 
@@ -354,7 +342,7 @@ mod test {
             Some(Symbol::O), Some(Symbol::X), Some(Symbol::O),
         ];
         game.check_over();
-        assert_eq!(game.is_over, true);
+        assert!(game.is_over);
         assert_eq!(game.winner, None);
     }
 
@@ -367,7 +355,7 @@ mod test {
             Some(Symbol::O), None, None,
         ];
         game.check_over();
-        assert_eq!(game.is_over, false);
+        assert!(!game.is_over);
         assert_eq!(game.winner, None);
     }
 

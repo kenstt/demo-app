@@ -24,7 +24,7 @@ fn greet(name: &str) -> String {
 #[tokio::main]    // 把原本的 main 改成 async main
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();                     // 讀取環境變數.env
-    let _logger = service::logger::Logger::builder().use_env().build();
+    let _logger = Logger::builder().use_env().build();
     tracing::info!("Starting tauri app");
 
     let context = Context::load();     // 初始化app共享物件

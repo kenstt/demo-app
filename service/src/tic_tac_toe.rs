@@ -112,10 +112,10 @@ mod tests {
         let service = InMemoryTicTacToeService::new();
         let (id, game) = service.new_game().unwrap();  // unwrap取得Result內容
         assert_eq!(id, 1);
-        assert_eq!(game.is_over, false);
-        let is_empty = game.cells.iter().all(|&x| x == None); // 驗證每一格都是空的
+        assert!(!game.is_over);
+        let is_empty = game.cells.iter().all(|&x| x.is_none()); // 驗證每一格都是空的
         // let is_empty = game.cells.iter().all(|x| *x == None); // 或是這樣寫
-        assert_eq!(is_empty, true);
+        assert!(is_empty);
     }
 
     #[test]
@@ -123,16 +123,16 @@ mod tests {
         let service = InMemoryTicTacToeService::new();
         let _ = service.new_game();                         // 新局的變數我們不需要，直接 _ 丟棄
         let game = service.get(1).unwrap();            // 透過 get 取得 game
-        assert_eq!(game.is_over, false);               // 簡單驗一下內容
-        let is_empty = game.cells.iter().all(|x| *x == None);
-        assert_eq!(is_empty, true);
+        assert!(!game.is_over);               // 簡單驗一下內容
+        let is_empty = game.cells.iter().all(|x| x.is_none());
+        assert!(is_empty);
     }
 
     #[test]
     fn test_get_none() {                               // 測試 None 會回傳Error
         let service = InMemoryTicTacToeService::new();
         let game = service.get(10);                    // Result<Game, Error>
-        assert_eq!(game.is_err(), true);               // 驗證回傳Error
+        assert!(game.is_err());               // 驗證回傳Error
         assert_eq!(game.err(), Some(Error::NotFound)); // 驗證Error類別
     }
 
@@ -166,9 +166,9 @@ mod tests {
         let service = InMemoryTicTacToeService::new();
         let _ = service.new_game();                         // 先製造1個才有東西刪除
         let result = service.delete(1);                // 執行刪除
-        assert_eq!(result.is_ok(), true);              // 驗證執行成功
+        assert!(result.is_ok());              // 驗證執行成功
         let game = service.get(1);                     // 覆驗已無編號1資料
-        assert_eq!(game.is_err(), true);
+        assert!(game.is_err());
         assert_eq!(game.err(), Some(Error::NotFound));
     }
 
@@ -176,7 +176,7 @@ mod tests {
     fn test_delete_none() {
         let service = InMemoryTicTacToeService::new();
         let result = service.delete(10);                // 刪除不存在資料
-        assert_eq!(result.is_err(), true);              // 如預期報錯
+        assert!(result.is_err());              // 如預期報錯
         assert_eq!(result.err(), Some(Error::NotFound));
     }
 }
