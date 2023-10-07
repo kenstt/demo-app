@@ -1,4 +1,5 @@
 <script>
+  import Notifications from 'svelte-notifications';
   import Header from './Header.svelte';
   import './styles.css';
 </script>
@@ -7,7 +8,9 @@
   <Header />
 
   <main>
-    <slot />
+    <Notifications >
+      <slot />
+    </Notifications>
   </main>
 
   <footer>

@@ -4,9 +4,16 @@
   import { emptyGame } from '../../model/tic_tac_toe';
   import { onMount } from 'svelte';
   import { wsClient } from "../../api/ws_client";
+  import { getNotificationsContext } from 'svelte-notifications';
+  const { addNotification } = getNotificationsContext();
 
   wsClient().onmessage = (e) => {
-    console.log(e.data);
+    addNotification({
+      text: e.data.match(/>:(.*)/)[1],
+      position: 'bottom-right',
+      type: 'info',
+      removeAfter: 4000,
+    });
   };
 
   let isOffline = false;

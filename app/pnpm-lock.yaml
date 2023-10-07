@@ -73,6 +73,9 @@ devDependencies:
   svelte-check:
     specifier: ^3.5.2
     version: 3.5.2(postcss@8.4.30)(svelte@4.2.1)
+  svelte-notifications:
+    specifier: ^0.9.98
+    version: 0.9.98
   svelte-preprocess:
     specifier: ^5.0.4
     version: 5.0.4(postcss@8.4.30)(svelte@4.2.1)(typescript@5.2.2)
@@ -2365,6 +2368,10 @@ packages:
       svelte: ^3.19.0 || ^4.0.0
     dependencies:
       svelte: 4.2.1
+    dev: true
+
+  /svelte-notifications@0.9.98:
+    resolution: {integrity: sha512-w7/sqnQtEjM5uzjb3HfB50RE6KMuuWEQZxfBw86IykslHFJRcTuRvaUv503UMqY/LaioOu6w9mjJTO+ejiReSQ==}
     dev: true
 
   /svelte-preprocess@5.0.4(postcss@8.4.30)(svelte@4.2.1)(typescript@5.2.2):
