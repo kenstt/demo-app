@@ -26,7 +26,7 @@
         <a href="/sverdle">Sverdle</a>
       </li>
       <li aria-current={$page.url.pathname === '/tic_tac_toe' ? 'page' : undefined}>
-        <a href="tic_tac_toe">井字遊戲</a>
+        <a href="/tic_tac_toe">井字遊戲</a>
       </li>
     </ul>
     <svg viewBox="0 0 2 3" aria-hidden="true">
