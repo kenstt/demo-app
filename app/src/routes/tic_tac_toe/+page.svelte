@@ -3,6 +3,11 @@
   import type { ErrorResponse } from '../../model/tic_tac_toe';
   import { emptyGame } from '../../model/tic_tac_toe';
   import { onMount } from 'svelte';
+  import { wsClient } from "../../api/ws_client";
+
+  wsClient().onmessage = (e) => {
+    console.log(e.data);
+  };
 
   let isOffline = false;
   $: isOffline ? (gameSet = emptyGame()) : (gameSet = emptyGame());
