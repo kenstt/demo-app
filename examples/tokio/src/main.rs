@@ -1,3 +1,6 @@
+#![allow(clippy::all)]
+#![allow(dead_code, unused_variables)]
+
 use rand::random;
 use chrono::Utc;
 

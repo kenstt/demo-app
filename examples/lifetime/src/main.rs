@@ -1,3 +1,6 @@
+#![allow(clippy::all)]
+#![allow(dead_code, unused_variables)]
+
 struct Student {   // 結構體，理論上應該一起存活
 no: i32,       // 編譯時已知大小，放Stack，使用Copy trait傳遞（Call by Value）
 name: String,  // 編譯時未知大小，放Heap，使用Call by reference

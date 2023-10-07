@@ -1,3 +1,6 @@
+#![allow(clippy::all)]
+#![allow(dead_code, unused_variables, unused_imports)]
+
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 

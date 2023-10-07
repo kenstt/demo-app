@@ -1,3 +1,6 @@
+#![allow(clippy::all)]
+#![allow(dead_code, unused_variables)]
+
 fn add_2(x: &i32) -> i32 {  // 這是fn，簽章是為了符合可以放進下面的map裡
     x + 2
 }

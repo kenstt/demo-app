@@ -1,3 +1,6 @@
+#![allow(clippy::all)]
+#![allow(dead_code, unused_variables)]
+
 fn main1() {
     let num: u8 = 200;               // u8 上限是 255
     let num2: u8 = 100;              // u8 上限是 255
