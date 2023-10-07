@@ -12,6 +12,7 @@ service = { path = "../service" }
 dotenvy = { workspace = true }
 futures-util = { workspace = true }
 prost = { workspace = true }
+rand = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }

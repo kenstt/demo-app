@@ -94,3 +94,21 @@ async fn disconnected(conn_id: usize, ctx: &AppContext) {
     tracing::info!("disconnected conn_id: {}", conn_id);
     ctx.ws_connections.write().await.remove(&conn_id);   // 從AppState移除該連線tx通道
 }
+
+use tokio::{time::Duration, time};
+use rand::random;
+
+pub async fn polling_message(ctx: &AppContext) {
+    let ctx = ctx.clone();
+    // 因為要一直存活才能處理，故開分身：
+    tokio::task::spawn(async move {
+        loop {
+            let secs = random::<u64>() % 9_000 + 1_000; // 產生隨機等待豪秒
+            time::sleep(Duration::from_millis(secs)).await;  // 等待
+
+            // 從訊息庫隨機取訊息並發送至用戶端
+            let message = my_core::game_message::message_factory();
+            send_all_message(0, Message::text(message), &ctx).await;
+        }
+    });
+}

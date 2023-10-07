@@ -1,4 +1,5 @@
 pub mod tic_tac_toe;
+pub mod game_message;
 
 pub fn add(left: usize, right: usize) -> usize {
     println!("add fn called in core");
