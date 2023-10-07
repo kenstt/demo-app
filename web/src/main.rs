@@ -1,10 +1,11 @@
 use service::logger::Logger;
-use web::{config, routers};
+use web::{config, routers, app_context::AppContext};
 
 #[tokio::main]
 async fn main() {
     config::init();
     let _logger = Logger::builder().use_env().build();
-    let routers = routers::all_routers();
+    let app_context = AppContext::default();    // 加入App狀態機
+    let routers = routers::all_routers(app_context.clone()); // 注入
     warp::serve(routers).run(([0, 0, 0, 0], config::http_port())).await;
 }
