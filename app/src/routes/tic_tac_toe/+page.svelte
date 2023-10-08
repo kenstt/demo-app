@@ -2,10 +2,13 @@
   import { api } from '../../api';
   import type { ErrorResponse } from '../../model/tic_tac_toe';
   import { emptyGame } from '../../model/tic_tac_toe';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from "svelte";
   import { wsClient } from "../../api/ws_client";
   import { getNotificationsContext } from 'svelte-notifications';
   const { addNotification } = getNotificationsContext();
+  import type { Event } from '@tauri-apps/api/event'
+  import { listen } from '@tauri-apps/api/event'
+  import { invoke } from '@tauri-apps/api/tauri';
 
   wsClient().onmessage = (e) => {
     addNotification({
@@ -67,8 +70,35 @@
     const target = e.target as HTMLInputElement;
     id = Number(target.value);
   };
+
+  let unlisten = () => { }
+  const subscribe = async () => {
+    if (typeof window !== 'undefined' && window.__TAURI_IPC__) {
+      unlisten();
+      unlisten = await listen('message', (event: Event<string>) => {
+        addNotification({
+          text: event.payload,
+          position: 'top-right',
+          type: 'success',
+          removeAfter: 3000,
+        });
+      });
+      console.log('已訂閱tauri message');
+    }
+  };
+  const unsubscribe = () => {
+    if (typeof window !== 'undefined' && window.__TAURI_IPC__) {
+      unlisten();
+      console.log('已取消訂閱tauri message');
+    }
+  };
   onMount(async () => {
     await newGame();
+    await subscribe();
+  });
+
+  onDestroy(() => {
+    unsubscribe();
   });
 </script>
 
