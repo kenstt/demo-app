@@ -92,9 +92,22 @@
       console.log('已取消訂閱tauri message');
     }
   };
+  const stopPolling = () => {
+    if (typeof window !== 'undefined' && window.__TAURI_IPC__) {
+      invoke('stop_polling_message');
+      console.log('已停止tauri message服務');
+    }
+  };
+  const startPolling = async () => {
+    if (typeof window !== 'undefined' && window.__TAURI_IPC__) {
+      await invoke('polling_message');
+      console.log('已啟動tauri message服務');
+    }
+  };
   onMount(async () => {
     await newGame();
     await subscribe();
+    await startPolling();
   });
 
   onDestroy(() => {
@@ -165,4 +178,31 @@
     >{symbol ?? ' '}
     </button>
   {/each}
+</div>
+
+<div class="grid grid-cols-4 justify-center items-baseline gap-3">
+  <button
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-2xl"
+    on:click={startPolling}
+  >
+    啟動訊息服務
+  </button>
+  <button
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-2xl"
+    on:click={stopPolling}
+  >
+    停止訊息服務
+  </button>
+  <button
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-2xl"
+    on:click={subscribe}
+  >
+    訂閱訊息
+  </button>
+  <button
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-2xl"
+    on:click={unsubscribe}
+  >
+    取消訂閱訊息
+  </button>
 </div>
