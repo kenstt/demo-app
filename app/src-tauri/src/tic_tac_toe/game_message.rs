@@ -43,9 +43,8 @@ fn status() -> &'static str {
 }
 
 /// status的另一種寫法，但是不安全，呼叫者要放在unsafe block中
-unsafe fn status_unsafe() -> &'static str {
-    if IS_POLLING { "執行中。" } else { "停止。" }
-}
+#[allow(dead_code)]
+unsafe fn status_unsafe() -> &'static str { if IS_POLLING { "執行中。" } else { "停止。" } }
 
 #[tauri::command]
 pub async fn stop_polling_message() {

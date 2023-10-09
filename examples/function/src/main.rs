@@ -1,3 +1,6 @@
+#![allow(clippy::all)]
+#![allow(dead_code, unused_variables)]
+
 // fn fn_once_say_hello(f: impl FnOnce(String) -> String) -> String
 fn fn_once_say_hello<F>(f: F) -> String
     where F: FnOnce(String) -> String,

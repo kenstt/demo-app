@@ -58,6 +58,7 @@ async fn ws_connected(ws: WebSocket, ctx: AppContext) {
 }
 
 /// 處理訊息發送給指定連線id用戶端
+#[allow(dead_code)]
 async fn send_one_message(my_id: usize, msg: Message, ctx: &AppContext) {
     let msg = if let Ok(s) = msg.to_str() {
         s
