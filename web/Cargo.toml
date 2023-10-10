@@ -9,12 +9,17 @@ edition = "2021"
 my-core = { path = "../core", package = "core" }
 service = { path = "../service" }
 
+argon2 = { workspace = true }
+chrono = { workspace = true }
 dotenvy = { workspace = true }
 futures-util = { workspace = true }
+hmac = { workspace = true }
+jwt = { workspace = true }
 prost = { workspace = true }
 rand = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
 tonic = { workspace = true }

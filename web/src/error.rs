@@ -3,7 +3,7 @@ use std::error::Error;
 use warp::{Rejection, Reply};
 use warp::http::StatusCode;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum AppError {                  // 我們在這定義web專案可能會遇到的錯誤
     UserFriendly(String, String),    // 回傳訊息給予前端User使用
     BadRequest(String),              // 錯誤的要求
