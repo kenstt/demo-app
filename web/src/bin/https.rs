@@ -1,3 +1,5 @@
+use std::net::IpAddr;
+use std::str::FromStr;
 use web::{config, routers};
 use service::logger::Logger;
 use web::app_context::AppContext;
@@ -15,10 +17,11 @@ async fn main() {
     let app_context = AppContext::default();    // 加入App狀態機
     polling_message(&app_context).await;                // 加這行
     let routers = routers::all_routers(app_context.clone()); // 注入
+    let addr = IpAddr::from_str("::0").unwrap();
     warp::serve(routers)
         .tls()
         .cert_path(config::tls_cert_path())
         .key_path(config::tls_key_path())
-        .run(([0, 0, 0, 0], config::https_port()))
+        .run((addr, config::https_port()))
         .await;
 }
