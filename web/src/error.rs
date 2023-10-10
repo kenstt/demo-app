@@ -4,24 +4,17 @@ use warp::{Rejection, Reply};
 use warp::http::StatusCode;
 
 #[derive(Debug)]
-pub enum AppError {
-    // 我們在這定義web專案可能會遇到的錯誤
-    UserFriendly(String, String),
-    // 回傳訊息給予前端User使用
-    BadRequest(String),
-    // 錯誤的要求
-    NotFound(String),
-    // 找不到資源
-    Unauthorized,
-    // 未經授權的操作
-    InternalServerError,              // 其他未歸類錯誤
+pub enum AppError {                  // 我們在這定義web專案可能會遇到的錯誤
+    UserFriendly(String, String),    // 回傳訊息給予前端User使用
+    BadRequest(String),              // 錯誤的要求
+    NotFound(String),                // 找不到資源
+    Unauthorized,                    // 未經授權的操作
+    InternalServerError,             // 其他未歸類錯誤
 }
 
 #[derive(serde::Serialize)]
-struct AppErrorMessage {
-    // 非 2XX 回應的Body
-    message: String,
-    // 錯誤的訊息內容
+struct AppErrorMessage {              // 非 2XX 回應的Body
+    message: String,                  // 錯誤的訊息內容
     details: Option<String>,          // 有關錯誤的細節資料（如果有的話）
 }
 
