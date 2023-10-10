@@ -15,11 +15,15 @@ pub fn all_routers(ctx: AppContext)
             "Hello, World!"
         });
 
+    let static_files = warp::path("static")
+        .and(warp::fs::dir("./static"));
+
     let game_service = service::tic_tac_toe::InMemoryTicTacToeService::new();
     game_service.new_game().unwrap();
     let api_games = tic_tac_toe::router_games(game_service);
 
     hello
+        .or(static_files)
         .or(ws_routers(ctx.clone()))
         .or(api_games)
         .recover(error::handle_rejection)
