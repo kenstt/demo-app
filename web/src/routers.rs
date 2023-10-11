@@ -1,16 +1,18 @@
 use warp::cors::Builder;
 use warp::{Filter, Rejection, Reply};
+use my_core::user::Permission;
 use service::tic_tac_toe::TicTacToeService;
 use crate::{error, tic_tac_toe};
 use crate::app_context::AppContext;
 use crate::web_socket::ws_routers;
-use crate::auth::login;
+use crate::auth::{login, with_permission};
 
 pub fn all_routers(ctx: AppContext)
     -> impl Filter<Extract=impl Reply, Error=Rejection> + Clone {
 
     let hello = warp::path("hello")
         .and(warp::get())
+        .and(with_permission(Permission::Admin))
         .map(|| {
             tracing::info!("saying hello...");
             "Hello, World!"

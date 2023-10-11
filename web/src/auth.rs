@@ -4,7 +4,12 @@ use hmac::{Hmac, digest::{InvalidLength, KeyInit}};
 use jwt::{AlgorithmType, Header, SignWithKey, Token, VerifyWithKey};
 use serde::{Deserialize, Serialize};
 use sha2::Sha384;
-use warp::{Filter, Rejection, Reply};
+use warp::{
+    Filter, Rejection, Reply,
+    header::headers_cloned,
+    http::{HeaderMap, HeaderValue}
+};
+use my_core::user:: Permission;
 use my_core::user::{fake_query_user_permissions};
 use crate::error::AppError;
 
@@ -49,6 +54,68 @@ pub struct LoginRequest {
 #[derive(Debug, Clone, Serialize)]
 pub struct LoginResponse {
     pub access_token: String,
+}
+
+pub fn with_auth() -> impl Filter<Extract=(CurrentUser, ), Error=Rejection> + Clone {
+    headers_cloned().and_then(|headers: HeaderMap<HeaderValue>| async move {
+        let auth_header = headers.get("Authorization");
+        match auth_header {
+            None => {
+                return Ok::<_, Rejection>(CurrentUser::Anonymous)
+            }
+            Some(auth_header) => {
+                let token = auth_header.to_str().unwrap().to_string();
+                let jwt = token.replace("Bearer ", "");
+                let claims = verify_jwt(key(), jwt)?;
+                let permissions = claims.permissions;
+                let name = claims.sub;
+                Ok::<_, Rejection>(CurrentUser::User { name, permissions })
+            }
+        }
+    })
+}
+
+pub fn with_permission(permission: Permission) -> impl Filter<Extract=(), Error=Rejection> + Clone {
+    with_auth().and_then(move |user: CurrentUser| {
+        let p = permission.clone();
+        async {
+            let result = check_permission(user, p);
+            match result {
+                Ok(_) => {
+                    Ok::<_, Rejection>(())
+                }
+                Err(_) => {
+                    Err(warp::reject::custom(AppError::Unauthorized))
+                }
+            }
+        }
+    }).untuple_one()
+}
+
+
+pub fn check_permission(user: CurrentUser, permission: Permission) -> Result<(), Rejection> {
+    let permission: u16 = permission.into();
+    match user {
+        CurrentUser::Anonymous => {
+            Err(warp::reject::custom(AppError::Unauthorized))
+        }
+        CurrentUser::User { name, permissions } => {
+            if permissions.iter().any(|&p| p == permission) {
+                Ok::<_, Rejection>(())
+            } else {
+                Err(warp::reject::custom(AppError::Unauthorized))
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum CurrentUser {
+    Anonymous,
+    User {
+        name: String,
+        permissions: Vec::<u16>,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
