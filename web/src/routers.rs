@@ -4,6 +4,7 @@ use service::tic_tac_toe::TicTacToeService;
 use crate::{error, tic_tac_toe};
 use crate::app_context::AppContext;
 use crate::web_socket::ws_routers;
+use crate::auth::login;
 
 pub fn all_routers(ctx: AppContext)
     -> impl Filter<Extract=impl Reply, Error=Rejection> + Clone {
@@ -23,6 +24,7 @@ pub fn all_routers(ctx: AppContext)
     let api_games = tic_tac_toe::router_games(game_service);
 
     hello
+        .or(login())
         .or(static_files)
         .or(ws_routers(ctx.clone()))
         .or(api_games)

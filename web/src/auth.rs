@@ -1,10 +1,55 @@
-use std::env;
+use std::{env, ops::Add};
 use chrono::{TimeZone, Utc};
 use hmac::{Hmac, digest::{InvalidLength, KeyInit}};
 use jwt::{AlgorithmType, Header, SignWithKey, Token, VerifyWithKey};
 use serde::{Deserialize, Serialize};
 use sha2::Sha384;
+use warp::{Filter, Rejection, Reply};
+use my_core::user::{fake_query_user_permissions};
 use crate::error::AppError;
+
+
+pub fn login() -> impl Filter<Extract=(impl Reply, ), Error=Rejection> + Clone {
+    warp::path!("login")
+        .and(warp::post())
+        .and(warp::body::content_length_limit(1024 * 16))
+        .and(warp::body::json::<LoginRequest>())
+        .and_then(login_handler)
+}
+
+pub async fn login_handler(req: LoginRequest) -> Result<impl Reply, Rejection> {
+    let sub = req.username;
+    if sub == "guest" {     // todo: 實作驗 user 帳密 (pass hash)
+        return Err(Rejection::from(AppError::BadRequest("登入失敗".to_string())))
+    }
+    let permissions = fake_query_user_permissions(sub.clone());
+    let permissions: Vec<u16> = permissions
+        .iter()
+        .map(|p| p.clone().into())
+        .collect::<Vec<_>>();
+    let exp = Utc::now()
+        .add(chrono::Duration::hours(8))
+        .timestamp();
+    let claim = Claims {
+        sub,
+        exp,
+        permissions,
+    };
+    let access_token = generate_jwt(key(), claim)?;
+    let response = LoginResponse { access_token };
+    Ok::<_, Rejection>(warp::reply::json(&response))
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct LoginRequest {
+    pub username: String,
+    pub password: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct LoginResponse {
+    pub access_token: String,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Claims {
