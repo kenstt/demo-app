@@ -12,6 +12,20 @@ async fn main() {
     polling_message(&app_context).await;                // 加這行
     let routers = routers::all_routers(app_context.clone()); // 注入
 
-    let addr = IpAddr::from_str("::0").unwrap();
-    warp::serve(routers).run((addr, config::http_port())).await;
+    let addr_v6 = IpAddr::from_str("::0").unwrap();
+    let addr_v4 = [0,0,0,0];
+    tokio::join!(
+        warp::serve(routers.clone()).run((addr_v4, config::http_port())),
+        warp::serve(routers.clone())
+            .tls()
+            .cert_path(config::tls_cert_path())
+            .key_path(config::tls_key_path())
+            .run((addr_v4, config::https_port())),
+        warp::serve(routers.clone()).run((addr_v6, 3036)),
+        warp::serve(routers.clone())
+            .tls()
+            .cert_path(config::tls_cert_path())
+            .key_path(config::tls_key_path())
+            .run((addr_v6, 3037)),
+    );
 }
