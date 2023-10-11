@@ -1,5 +1,11 @@
-use warp::cors::Builder;
-use warp::{Filter, Rejection, Reply};
+use warp::{
+    Filter, Rejection, Reply,
+    cors::Builder,
+    hyper::body::Bytes,
+    path::FullPath,
+    http::{HeaderMap, Method},
+};
+use std::net::SocketAddr;
 use my_core::user::Permission;
 use service::tic_tac_toe::TicTacToeService;
 use crate::{error, tic_tac_toe};
@@ -13,6 +19,7 @@ pub fn all_routers(ctx: AppContext)
     let hello = warp::path("hello")
         .and(warp::get())
         .and(with_permission(Permission::Admin))
+        .and(tracing())
         .map(|| {
             tracing::info!("saying hello...");
             "Hello, World!"
@@ -41,7 +48,30 @@ fn cors_config() -> Builder {
         .allow_methods(vec!["GET", "PUT", "POST", "DELETE"])
 }
 
-
+/// 注意：使用此API時必需要傳入http 的 query string，不然會報錯
+fn tracing() -> impl Filter<Extract=(), Error=Rejection> + Clone {
+    warp::addr::remote()
+        .and(warp::header::headers_cloned())
+        .and(warp::method())
+        .and(warp::path::full())
+        .and(warp::query::raw())
+        .and(warp::body::bytes())
+        .and_then(|addr:Option<SocketAddr> , headers:HeaderMap, method:Method, path:FullPath, query: String, body:Bytes| async move {
+            let query = query.to_string();
+            let body = String::from_utf8(body.to_vec()).unwrap_or_default();
+            tracing::warn!(
+                "addr: {:?}\nmethod: {:?}\npath: {:?}\nquery: {:?}\nheaders: {:?}\nbody: {:?}",
+                addr,
+                method,
+                path,
+                query,
+                headers,
+                body
+            );
+            Ok::<(), Rejection>(())
+        })
+        .untuple_one()
+}
 
 // use futures_util::stream::StreamExt;
 // use futures_util::FutureExt;
