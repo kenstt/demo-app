@@ -24,6 +24,7 @@
     "@neoconfetti/svelte": "^1.0.0",
     "@playwright/test": "^1.38.1",
     "@sveltejs/adapter-auto": "^2.1.0",
+    "@sveltejs/adapter-static": "^2.0.3",
     "@sveltejs/kit": "^1.25.1",
     "@sveltejs/vite-plugin-svelte": "^2.4.6",
     "@tauri-apps/cli": "^1.4.0",
