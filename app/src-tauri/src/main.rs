@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 polling_message(app_handle.clone()).await;
             });
             let main_window = app.get_window("main").unwrap();
-            main_window.eval("window.location.href = '/game'").unwrap();
+            main_window.eval("window.location.href = '/login'").unwrap();
             Ok(())
         })
         .manage(context)    // 註冊為tauri的狀態物件

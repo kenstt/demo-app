@@ -10,6 +10,7 @@ export const login = async (username: string, password: string): Promise<void> =
     const data: { access_token: string } = await response.json();
     const jwt = data.access_token;
     setJwt(jwt);
+    goto('/game').then(() => console.log('redirect to /game'));
   }
 };
 
