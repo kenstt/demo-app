@@ -1,6 +1,6 @@
 tonic::include_proto!("game");                // 引入自動建立的代碼
 
-use web::error::AppError;
+use crate::error::AppError;
 use tonic::{Request, Response, Status};
 use tic_tac_toe_server::{TicTacToe};
 use service::tic_tac_toe::{InMemoryTicTacToeService, TicTacToeService};

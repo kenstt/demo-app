@@ -1,12 +1,9 @@
 use tonic::{transport::Server};
-use hello_world::{
+use web::grpc::hello_world::{
     greeter_server::GreeterServer,    // build 幫我們產生的 gRPC Server
     MyGreeter,                        // 我們實作的方法
 };
-use tic_tac_toe::{tic_tac_toe_server::TicTacToeServer, TicTacToeGrpcService};
-
-mod hello_world;
-mod tic_tac_toe;
+use web::grpc::tic_tac_toe::{tic_tac_toe_server::TicTacToeServer, TicTacToeGrpcService};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
