@@ -9,6 +9,7 @@
   import type { Event } from '@tauri-apps/api/event'
   import { listen } from '@tauri-apps/api/event'
   import { invoke } from '@tauri-apps/api/tauri';
+  import { route_guard } from "../../../api/auth";
 
   wsClient().onmessage = (e) => {
     addNotification({
@@ -105,6 +106,7 @@
     }
   };
   onMount(async () => {
+    route_guard();
     await newGame();
     await subscribe();
     await startPolling();
