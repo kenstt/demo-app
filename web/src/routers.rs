@@ -46,6 +46,7 @@ fn cors_config() -> Builder {
     warp::cors()
         .allow_any_origin()
         .allow_methods(vec!["GET", "PUT", "POST", "DELETE"])
+        .allow_headers(vec!["Content-Type", "Authorization"])
 }
 
 /// 注意：使用此API時必需要傳入http 的 query string，不然會報錯
