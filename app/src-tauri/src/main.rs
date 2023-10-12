@@ -6,6 +6,7 @@ mod tic_tac_toe;
 mod context;
 mod hello_grpc;
 
+use tauri::Manager;
 use crate::hello_grpc::say_hello;
 use crate::context::Context;
 use service::logger::Logger;
@@ -38,6 +39,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             tokio::spawn(async move {
                 polling_message(app_handle.clone()).await;
             });
+            let main_window = app.get_window("main").unwrap();
+            main_window.eval("window.location.href = '/game'").unwrap();
             Ok(())
         })
         .manage(context)    // 註冊為tauri的狀態物件

@@ -17,16 +17,16 @@
     </svg>
     <ul>
       <li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
-        <a href="/">Home</a>
+        <a href="/game">Home</a>
       </li>
       <li aria-current={$page.url.pathname === '/about' ? 'page' : undefined}>
-        <a href="/about">About</a>
+        <a href="/game/about">About</a>
       </li>
       <li aria-current={$page.url.pathname.startsWith('/sverdle') ? 'page' : undefined}>
-        <a href="/sverdle">Sverdle</a>
+        <a href="/game/sverdle">Sverdle</a>
       </li>
       <li aria-current={$page.url.pathname === '/tic_tac_toe' ? 'page' : undefined}>
-        <a href="/tic_tac_toe">井字遊戲</a>
+        <a href="/game/tic_tac_toe">井字遊戲</a>
       </li>
     </ul>
     <svg viewBox="0 0 2 3" aria-hidden="true">

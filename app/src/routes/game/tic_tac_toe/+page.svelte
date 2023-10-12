@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { api } from '../../api';
-  import type { ErrorResponse } from '../../model/tic_tac_toe';
-  import { emptyGame } from '../../model/tic_tac_toe';
+  import { api } from '../../../api';
+  import type { ErrorResponse } from '../../../model/tic_tac_toe';
+  import { emptyGame } from '../../../model/tic_tac_toe';
   import { onDestroy, onMount } from "svelte";
-  import { wsClient } from "../../api/ws_client";
+  import { wsClient } from "../../../api/ws_client";
   import { getNotificationsContext } from 'svelte-notifications';
   const { addNotification } = getNotificationsContext();
   import type { Event } from '@tauri-apps/api/event'
