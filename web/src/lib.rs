@@ -4,5 +4,6 @@ pub mod error;
 pub mod routers;
 pub mod web_socket;
 pub mod app_context;
+pub mod open_api;
 pub mod auth;
 pub mod grpc;

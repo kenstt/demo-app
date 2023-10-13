@@ -1,6 +1,7 @@
 use rand::prelude::SliceRandom;
 use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 const SYMBOLS: [Symbol; 2] = [Symbol::O, Symbol::X];
 
@@ -18,14 +19,14 @@ pub enum Error {
 }
 
 /// 井字遊戲的符號。
-#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize, ToSchema)]
 pub enum Symbol {
     O,
     X,
 }
 
 /// 井字遊戲棋局
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, ToSchema)]
 pub struct Game {
     /// 棋盤格子，每個格子可能是空的，或是被劃記的符號。
     pub cells: [Option<Symbol>; 9],

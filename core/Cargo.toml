@@ -13,6 +13,7 @@ path = "src/play.rs"
 rand = { worksapce = true }
 serde = { workspace = true }
 thiserror = { worksapce = true }
+utoipa = { worksapce = true }
 
 [dev-dependencies]
 criterion = "0.5"

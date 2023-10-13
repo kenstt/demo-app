@@ -10,6 +10,7 @@ use my_core::user::Permission;
 use service::tic_tac_toe::TicTacToeService;
 use crate::{error, tic_tac_toe};
 use crate::app_context::AppContext;
+use crate::open_api::api_doc_handler;
 use crate::web_socket::ws_routers;
 use crate::auth::{login, with_permission};
 
@@ -32,7 +33,8 @@ pub fn all_routers(ctx: AppContext)
     game_service.new_game().unwrap();
     let api_games = tic_tac_toe::router_games(game_service);
 
-    hello
+    api_doc_handler()
+        .or(hello)
         .or(login())
         .or(static_files)
         .or(ws_routers(ctx.clone()))

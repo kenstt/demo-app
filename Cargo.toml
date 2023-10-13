@@ -31,4 +31,7 @@ tonic-build = { version = "0.10" }
 tracing = { version = "0.1" }
 tracing-appender = { version = "0.2" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+utoipa = { version = "4.0" }
+utoipa-rapidoc = { version = "1.0" }
+utoipa-swagger-ui = { version = "4.0" }
 warp = { version = "0.3", features = ["tls"] }

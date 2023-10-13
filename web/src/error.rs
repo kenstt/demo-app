@@ -12,8 +12,8 @@ pub enum AppError {                  // 我們在這定義web專案可能會遇�
     InternalServerError,             // 其他未歸類錯誤
 }
 
-#[derive(serde::Serialize)]
-struct AppErrorMessage {              // 非 2XX 回應的Body
+#[derive(serde::Serialize, ToSchema)]
+pub struct AppErrorMessage {          // 非 2XX 回應的Body
     message: String,                  // 錯誤的訊息內容
     details: Option<String>,          // 有關錯誤的細節資料（如果有的話）
 }
@@ -84,6 +84,7 @@ impl From<GameSrvError> for AppError {
 impl warp::reject::Reject for AppError {}
 
 use tonic::{Code, Status};
+use utoipa::ToSchema;
 
 impl From<AppError> for Status {
     fn from(value: AppError) -> Self {

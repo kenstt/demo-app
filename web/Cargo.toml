@@ -24,6 +24,9 @@ tokio = { workspace = true }
 tokio-stream = { workspace = true }
 tonic = { workspace = true }
 tracing = { workspace = true }
+utoipa = { workspace = true }
+utoipa-rapidoc = { workspace = true }
+utoipa-swagger-ui = { workspace = true }
 warp = { workspace = true }
 
 [build-dependencies]

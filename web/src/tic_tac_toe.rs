@@ -2,6 +2,7 @@ use warp::{Filter, Rejection};
 use service::tic_tac_toe::TicTacToeService;
 use crate::error::AppError;
 use warp::http::StatusCode;
+use my_core::tic_tac_toe::Game;
 
 pub fn router_games(
     service: impl TicTacToeService
@@ -13,6 +14,18 @@ pub fn router_games(
 }
 
 /// GET /tic_tac_toe/:id
+#[utoipa::path(
+    get,
+    path = "/tic_tac_toe/{id}",
+    params(
+        ("id" = u32, description = "遊戲ID")
+    ),
+    responses(
+        (status = 200, description = "正確取得遊戲結果", body = Game),
+        (status = 404, description = "找不到資料", body = AppErrorMessage),
+        (status = 500, description = "意外的錯誤", body = AppErrorMessage),
+    )
+)]
 pub fn games_get(
     service: impl TicTacToeService
 ) -> impl Filter<Extract=(impl warp::Reply, ), Error=Rejection> + Clone {
@@ -38,6 +51,15 @@ pub async fn handle_games_get(
 }
 
 /// POST /tic_tac_toe/
+#[utoipa::path(
+    post,
+    path = "/tic_tac_toe",
+    responses(
+        (status = 200, description = "正確開啟遊戲新局", body = Game),
+        (status = 500, description = "意外的錯誤", body = AppErrorMessage),
+    ),
+
+)]
 pub fn games_create(
     service: impl TicTacToeService
 ) -> impl Filter<Extract=(impl warp::Reply, ), Error=Rejection> + Clone {
@@ -53,6 +75,20 @@ pub fn games_create(
 }
 
 /// PUT /tic_tac_toe/:id/:num
+#[utoipa::path(
+    put,
+    path = "/tic_tac_toe/{id}/{step}",
+    params(
+        ("id" = u32, description = "遊戲ID"),
+        ("step" = u32, description = "九宮格格號")
+    ),
+    responses(
+        (status = 200, description = "執行成功", body = Game),
+        (status = 400, description = "違反遊戲規則", body = AppErrorMessage),
+        (status = 404, description = "找不到資料", body = AppErrorMessage),
+        (status = 500, description = "意外的錯誤", body = AppErrorMessage),
+    )
+)]
 pub fn games_play(
     service: impl TicTacToeService
 ) -> impl Filter<Extract=(impl warp::Reply, ), Error=Rejection> + Clone {
@@ -68,6 +104,18 @@ pub fn games_play(
 }
 
 /// DELETE /tic_tac_toe/:id
+#[utoipa::path(
+    delete,
+    path = "/tic_tac_toe/{id}",
+    params(
+     ("id" = u32, description = "遊戲ID")
+    ),
+    responses(
+        (status = 204, description = "正確刪除"),
+        (status = 404, description = "找不到資料", body = AppErrorMessage),
+        (status = 500, description = "意外的錯誤", body = AppErrorMessage),
+    )
+)]
 pub fn games_delete(
     service: impl TicTacToeService
 ) -> impl Filter<Extract=(impl warp::Reply, ), Error=Rejection> + Clone {
