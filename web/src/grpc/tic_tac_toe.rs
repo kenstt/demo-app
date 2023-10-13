@@ -4,6 +4,7 @@ use crate::error::AppError;
 use tonic::{Request, Response, Status};
 use tic_tac_toe_server::{TicTacToe};
 use service::tic_tac_toe::{InMemoryTicTacToeService, TicTacToeService};
+use crate::auth::CurrentUser;
 
 type CoreGame = my_core::tic_tac_toe::Game;
 // 別名：識別core裡的Game
@@ -43,8 +44,13 @@ impl TicTacToe for TicTacToeGrpcService {
     }
 
     async fn new_game(
-        &self, _request: Request<EmptyRequest>,
+        &self, request: Request<EmptyRequest>,
     ) -> Result<Response<GameSet>, Status> {
+        let user = request
+            .extensions()
+            .get::<CurrentUser>()
+            .unwrap();
+        tracing::info!("user: {:?}", user);
         let (id, game) = self.service.new_game().map_err(AppError::from)?;
         let game_set = GameSet {        // gRPC產的結構體GameSet
             id: id.try_into().unwrap(),                         // id: id的縮寫
