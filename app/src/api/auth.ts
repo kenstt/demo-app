@@ -1,5 +1,17 @@
 import { goto } from '$app/navigation';
 import { cleanJwt, getJwt, httpClient, setJwt } from './ky';
+import { invoke } from '@tauri-apps/api/tauri';
+
+export const tauriLogin = async (username: string, password: string): Promise<void> => {
+  try {
+    let r: { access_token: string } = await invoke('login', {username, password});
+    const jwt = r.access_token;
+    setJwt(jwt);
+    goto('/game').then(() => console.log('redirect to /game'));
+  } catch (e) {
+    cleanJwt();
+  }
+}
 
 export const login = async (username: string, password: string): Promise<void> => {
   cleanJwt();

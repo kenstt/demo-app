@@ -5,6 +5,7 @@ mod error;
 mod tic_tac_toe;
 mod context;
 mod hello_grpc;
+mod auth;
 
 use tauri::Manager;
 use crate::hello_grpc::say_hello;
@@ -16,6 +17,7 @@ use tic_tac_toe::rest_api::{get_game, new_game, play_game, delete_game};
 use tic_tac_toe::embedded::{get_game_e, new_game_e, play_game_e, delete_game_e};
 use tic_tac_toe::grpc::{get_game_grpc, new_game_grpc, play_game_grpc, delete_game_grpc};
 use tic_tac_toe::game_message::{polling_message, stop_polling_message};
+use auth::login;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -51,6 +53,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             get_game_e, new_game_e, play_game_e, delete_game_e,
             get_game_grpc, new_game_grpc, play_game_grpc, delete_game_grpc,
             polling_message, stop_polling_message,
+            login,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

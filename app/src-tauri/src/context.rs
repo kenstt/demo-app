@@ -1,11 +1,14 @@
 use std::env;
+use std::sync::{Arc, RwLock};
 use reqwest::{Client, Url};
 use tonic::transport::Channel;
 
+#[derive(Clone, Debug)]
 pub struct Context {
     base_url: Url,          // base Url
     http_client: Client,    // 有連線池的http client
     channel: Channel,       // gRPC 用戶端物件
+    pub token: Arc<RwLock<Option<String>>>,  // JWT token
 }
 
 impl Context {
@@ -23,6 +26,7 @@ impl Context {
             base_url,
             http_client,
             channel,
+            token: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -35,4 +39,8 @@ impl Context {
     }
 
     pub fn channel(&self) -> Channel { self.channel.clone() }   // getter
+
+    pub fn token(&self) -> Option<String> {
+        self.token.read().unwrap().clone()
+    }
 }

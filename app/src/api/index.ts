@@ -1,6 +1,6 @@
 import type { TicTacToeApi } from './tic_tac_toe';
 import { ticTacToeApi, ticTacToeApiTauri, ticTacToeApiTauriOffline, ticTacToeApiWasm, } from './tic_tac_toe';
-import { login } from './auth';
+import { login, tauriLogin } from './auth';
 
 export interface Api {
   ticTacToe: TicTacToeApi;
@@ -17,7 +17,7 @@ const httpApi: Api = {
 const tauriApi: Api = {
   ticTacToe: ticTacToeApiTauri,
   ticTacToeOffline: ticTacToeApiTauriOffline,
-  login,
+  login: tauriLogin,
 };
 
 // @ts-ignore

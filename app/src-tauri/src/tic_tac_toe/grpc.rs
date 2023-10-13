@@ -38,6 +38,7 @@ impl From<Game> for CoreGame {                     // mapping
 
 
 use tauri::State;
+use tonic::{Request, metadata::MetadataValue};
 use crate::context::Context;
 use crate::error::ErrorResponse;
 use tic_tac_toe_client::TicTacToeClient;        // 使用proto產出的 Client
@@ -46,7 +47,17 @@ use tic_tac_toe_client::TicTacToeClient;        // 使用proto產出的 Client
 pub async fn new_game_grpc(ctx: State<'_, Context>)     // 注入Context
     -> Result<(u32, CoreGame), ErrorResponse> {
     let channel = ctx.channel();                        // 取得連線池channel
-    let mut client = TicTacToeClient::new(channel);     // 客戶端連線
+    let token = ctx.token();
+    let mut client = TicTacToeClient::with_interceptor(channel,
+        move |mut req: Request<()>| {
+            tracing:: info!("info: {:?}", token);
+            if token.is_some() {
+                let jwt = token.clone().unwrap();
+                let bearer: MetadataValue<_> = format!("Bearer {}", jwt).parse().unwrap();
+                req.metadata_mut().insert("authorization", bearer);
+            }
+            Ok(req)
+        });
     let request = tonic::Request::new(EmptyRequest {}); // 準備無參數請求內容
     let game_set: GameSet = client.new_game(request)    // 發送請求
         .await?.into_inner();                           // gRPC的GameSet物件
